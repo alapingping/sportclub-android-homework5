@@ -31,7 +31,7 @@ public class RecommendFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_recommend, container, false);
-        web_view = (WebView)view.findViewById(R.id.recommed_web);
+        web_view = view.findViewById(R.id.recommed_web);
         web_view.loadUrl(Url);
         initWebView();
         web_view.setWebViewClient(new WebViewClient());

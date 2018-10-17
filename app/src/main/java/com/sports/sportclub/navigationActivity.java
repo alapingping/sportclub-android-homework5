@@ -9,8 +9,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+
 import android.view.KeyEvent;
 import android.view.View;
 import android.support.design.widget.NavigationView;

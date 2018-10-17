@@ -17,7 +17,7 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         //设置下划线
-        TextView forget_text = (TextView)findViewById(R.id.forget_text);
+        TextView forget_text = findViewById(R.id.forget_text);
         forget_text.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG);
         //设置监听
         forget_text.setOnClickListener(new View.OnClickListener() {
@@ -27,7 +27,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        TextView signup_text = (TextView)findViewById(R.id.register_text);
+        TextView signup_text = findViewById(R.id.register_text);
         signup_text.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG);
         signup_text.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -40,8 +40,8 @@ public class LoginActivity extends AppCompatActivity {
 
     //注册按钮的跳转
     public void onClickSignin(View view) {
-        EditText username_input = (EditText)findViewById(R.id.username_input);
-        EditText password_input = (EditText)findViewById(R.id.password_input);
+        EditText username_input = findViewById(R.id.username_input);
+        EditText password_input = findViewById(R.id.password_input);
 
         String username = username_input.getText().toString();
         String password = password_input.getText().toString();

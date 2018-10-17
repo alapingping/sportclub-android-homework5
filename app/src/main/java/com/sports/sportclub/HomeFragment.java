@@ -19,7 +19,7 @@ import android.view.ViewGroup;
 public class HomeFragment extends Fragment {
 
     private ViewPager viewPager;
-    private PagerAdapter pagerAdapter;
+
 
     public HomeFragment() {
         // Required empty public constructor

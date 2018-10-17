@@ -30,9 +30,9 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     public void onClickSignup(View view) {
-        EditText username_input = (EditText)findViewById(R.id.username_input);
-        EditText password_input = (EditText)findViewById(R.id.password_input);
-        EditText ensure_password_input = (EditText)findViewById(R.id.ensure_password_input);
+        EditText username_input = findViewById(R.id.username_input);
+        EditText password_input = findViewById(R.id.password_input);
+        EditText ensure_password_input = findViewById(R.id.ensure_password_input);
         String username = username_input.getText().toString();
         String password = password_input.getText().toString();
         String ensure_password = ensure_password_input.getText().toString();

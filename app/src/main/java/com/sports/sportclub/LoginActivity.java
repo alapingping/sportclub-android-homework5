@@ -9,6 +9,13 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.sports.sportclub.DataModel.User;
+
+import cn.bmob.v3.Bmob;
+import cn.bmob.v3.BmobQuery;
+import cn.bmob.v3.exception.BmobException;
+import cn.bmob.v3.listener.SaveListener;
+
 public class LoginActivity extends AppCompatActivity {
 
     @Override
@@ -16,6 +23,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        Bmob.initialize(this, "5fad9f2543ffa83e56155a46398d6ede");
         //设置下划线
         TextView forget_text = findViewById(R.id.forget_text);
         forget_text.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG);
@@ -38,18 +46,44 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    //注册按钮的跳转
+    //登陆按钮的跳转
     public void onClickSignin(View view) {
-        EditText username_input = findViewById(R.id.username_input);
+        EditText userEmail_input = findViewById(R.id.userEmail_input);
         EditText password_input = findViewById(R.id.password_input);
 
-        String username = username_input.getText().toString();
+        String userEmail = userEmail_input.getText().toString();
         String password = password_input.getText().toString();
 
-        Intent intent = new Intent(this,navigationActivity.class);
-        startActivity(intent);
-        finish();
+        User current_user = new User(userEmail,password);
+
+//        current_user.save(new SaveListener<String>() {
+//            @Override
+//            public void done(String s, BmobException e) {
+//                if(e != null){
+//                    Toast.makeText(LoginActivity.this,e.getMessage(),Toast.LENGTH_LONG).show();
+//                }else{
+//                    Toast.makeText(LoginActivity.this,"success",Toast.LENGTH_LONG).show();
+//                }
+//            }
+//        });
+
+//        BmobQuery<User> query = new BmobQuery<>();
+//        query.getObject()
+
+
+
+//        Intent intent = new Intent(this,navigationActivity.class);
+//        startActivity(intent);
+//        finish();
     }
+
+    public boolean Validation(User user){
+
+
+
+        return false;
+    }
+
 
 
 

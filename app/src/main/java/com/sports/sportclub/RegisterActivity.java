@@ -30,12 +30,12 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     public void onClickSignup(View view) {
-        EditText username_input = findViewById(R.id.username_input);
-        EditText password_input = findViewById(R.id.password_input);
-        EditText ensure_password_input = findViewById(R.id.ensure_password_input);
-        String username = username_input.getText().toString();
-        String password = password_input.getText().toString();
-        String ensure_password = ensure_password_input.getText().toString();
+//        EditText username_input = findViewById(R.id.userEmail_input);
+//        EditText password_input = findViewById(R.id.password_input);
+//        EditText ensure_password_input = findViewById(R.id.ensure_password_input);
+//        String username = username_input.getText().toString();
+//        String password = password_input.getText().toString();
+//        String ensure_password = ensure_password_input.getText().toString();
 
         Toast.makeText(this,"注册成功",Toast.LENGTH_LONG).show();
         Intent intent = new Intent(this,navigationActivity.class);

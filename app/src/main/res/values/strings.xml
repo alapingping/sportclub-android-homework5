@@ -38,7 +38,7 @@
 
     <!-- This is for Login -->
     <string name="welcome_text">Welcom to Sport Club</string>
-    <string name="username_input_hint">在此输入账号</string>
+    <string name="username_input_hint">在此输入邮箱</string>
     <string name="password_input_hint">在此输入密码</string>
     <string name="signin">Sign in</string>
     <string name="forget_password">忘记密码</string>

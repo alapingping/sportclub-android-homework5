@@ -1,6 +1,7 @@
 package com.sports.sportclub.DataModel;
 
 import cn.bmob.v3.BmobObject;
+import cn.bmob.v3.BmobUser;
 
 /**
  * Created by 16301 on 2018/10/30 0030.
@@ -12,7 +13,7 @@ import cn.bmob.v3.BmobObject;
  * String: UserPass
  */
 
-public class User extends BmobObject {
+public class User extends BmobUser {
 
     //this is name of user
     private String UserName;
@@ -22,7 +23,7 @@ public class User extends BmobObject {
     private String UserPass;
 
     public User(String userEmail, String userPass){
-        this.UserEmail = userEmail;
+        this.UserName = userEmail;
         this.UserPass = userPass;
     }
 

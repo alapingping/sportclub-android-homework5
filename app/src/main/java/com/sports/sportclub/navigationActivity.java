@@ -24,6 +24,8 @@ import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.Toast;
 
+import cn.bmob.v3.BmobUser;
+
 public class navigationActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -253,6 +255,8 @@ public class navigationActivity extends AppCompatActivity
     }
 
     public void onClickLogout(View view){
+
+        BmobUser.logOut();
 
         Intent intent = new Intent(navigationActivity.this,LoginActivity.class);
         startActivity(intent);

@@ -1,16 +1,17 @@
-package com.sports.sportclub.DataModel;
+package com.sports.sportclub.api;
 
 /**
  * Created by 16301 on 2018/10/30 0030.
  */
 
+import com.sports.sportclub.DataModel.User;
+
 import retrofit2.Call;
 import retrofit2.http.*;
 
-public interface API {
+public interface BmobService {
 
     @Headers("apikey:918a3c131997a216e99fd565230832f5")
-
 
 
 

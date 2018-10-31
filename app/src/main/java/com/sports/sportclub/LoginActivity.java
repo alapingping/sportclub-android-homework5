@@ -13,10 +13,13 @@ import com.sports.sportclub.DataModel.User;
 
 import cn.bmob.v3.Bmob;
 import cn.bmob.v3.BmobQuery;
+import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.SaveListener;
 
 public class LoginActivity extends AppCompatActivity {
+
+    private BmobUser current_user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,26 +27,33 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         Bmob.initialize(this, "5fad9f2543ffa83e56155a46398d6ede");
-        //设置下划线
-        TextView forget_text = findViewById(R.id.forget_text);
-        forget_text.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG);
-        //设置监听
-        forget_text.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(LoginActivity.this,"该功能未开放",Toast.LENGTH_LONG).show();
-            }
-        });
 
-        TextView signup_text = findViewById(R.id.register_text);
-        signup_text.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG);
-        signup_text.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(LoginActivity.this,RegisterActivity.class);
-                startActivity(intent);
-            }
-        });
+        current_user = BmobUser.getCurrentUser();
+        if(current_user != null){
+            jump2main();
+        }
+        else{
+            //设置下划线
+            TextView forget_text = findViewById(R.id.forget_text);
+            forget_text.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG);
+            //设置监听
+            forget_text.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Toast.makeText(LoginActivity.this,"该功能未开放",Toast.LENGTH_LONG).show();
+                }
+            });
+
+            TextView signup_text = findViewById(R.id.register_text);
+            signup_text.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG);
+            signup_text.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(LoginActivity.this,RegisterActivity.class);
+                    startActivity(intent);
+                }
+            });
+        }
     }
 
     //登陆按钮的跳转
@@ -54,7 +64,23 @@ public class LoginActivity extends AppCompatActivity {
         String userEmail = userEmail_input.getText().toString();
         String password = password_input.getText().toString();
 
-        User current_user = new User(userEmail,password);
+
+        current_user = new BmobUser();
+        current_user.setPassword(password);
+        current_user.setUsername(userEmail);
+        current_user.login(new SaveListener<BmobUser>() {
+
+            @Override
+            public void done(BmobUser user, BmobException e) {
+                if(e == null){
+                    showmsg("登陆成功");
+                    jump2main();
+                }
+                else{
+                    showmsg(e.getMessage().toString());
+                }
+            }
+        });
 
 //        current_user.save(new SaveListener<String>() {
 //            @Override
@@ -70,21 +96,22 @@ public class LoginActivity extends AppCompatActivity {
 //        BmobQuery<User> query = new BmobQuery<>();
 //        query.getObject()
 
-
-
-//        Intent intent = new Intent(this,navigationActivity.class);
-//        startActivity(intent);
-//        finish();
     }
 
     public boolean Validation(User user){
-
-
 
         return false;
     }
 
 
+    public void showmsg(String msg){
+        Toast.makeText(LoginActivity.this,msg,Toast.LENGTH_LONG).show();
+    }
 
+    public void jump2main(){
+        Intent intent = new Intent(this,navigationActivity.class);
+        startActivity(intent);
+        finish();
+    }
 
 }

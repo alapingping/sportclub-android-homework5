@@ -27,9 +27,14 @@ dependencies {
 
     compile('com.squareup.retrofit2:retrofit:2.1.0')
             { exclude group: 'com.squareup.okhttp3' }
+
     compile('com.squareup.retrofit2:converter-gson:2.1.0')
             { exclude group: 'com.google.code.gson'
-                exclude group: 'com.squareup.okhttp3' }
+                exclude group: 'com.squareup.okhttp3'
+            }
+
+    compile('com.squareup.okhttp3:okhttp:3.3.0')
+            { exclude group: 'com.squareup.okio' }
 
     implementation 'com.android.support:appcompat-v7:26.1.0'
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'

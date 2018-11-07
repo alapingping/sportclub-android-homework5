@@ -9,7 +9,6 @@
 
     <string name="action_settings">Settings</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="first_title">Upcomming Exam - 2nd Mid</string>
     <string name="exam_items">
         4th April, Tuesday - EDC\n
@@ -33,12 +32,11 @@
         PLAY - Sports Time\n
     </string>
 
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="no_favorite">还没有收藏</string>
 
     <!-- This is for Login -->
     <string name="welcome_text">Welcom to Sport Club</string>
-    <string name="username_input_hint">在此输入邮箱</string>
+    <string name="username_input_hint">在此输入用户名</string>
     <string name="password_input_hint">在此输入密码</string>
     <string name="signin">Sign in</string>
     <string name="forget_password">忘记密码</string>
@@ -49,6 +47,7 @@
     <string name="signup">Sign up</string>
     <string name="ensure_password_input_hint">再次输入密码</string>
     <string name="title_activity_bottom_navigation">BottomNavigationActivity</string>
+    <string name="loginRightNow">已有账号？立即登陆！</string>
 
     <!-- This is for bottom navigation -->
     <string name="title_home">主页</string>
@@ -57,7 +56,6 @@
     <string name="title_activity_tabbed">TabbedActivity</string>
     <string name="section_format">Hello World from section: %1$d</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="noAppointment">还没有预约</string>
     <string name="gotoAppointment">发现精彩</string>
 

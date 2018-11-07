@@ -1,6 +1,5 @@
 package com.sports.sportclub.DataModel;
 
-import cn.bmob.v3.BmobObject;
 import cn.bmob.v3.BmobUser;
 
 /**
@@ -15,39 +14,12 @@ import cn.bmob.v3.BmobUser;
 
 public class User extends BmobUser {
 
-    //this is name of user
-    private String UserName;
-    //the email of user
-    private String UserEmail;
-    //the password of User
-    private String UserPass;
-
-    public User(String userEmail, String userPass){
-        this.UserName = userEmail;
-        this.UserPass = userPass;
+    public User(String userName, String userPass){
+        super();
+        super.setUsername(userName);
+        super.setPassword(userPass);
     }
 
-    public String getUserEmail() {
-        return UserEmail;
-    }
 
-    public String getUserName() {
-        return UserName;
-    }
 
-    public String getUserPass() {
-        return UserPass;
-    }
-
-    public void setUserEmail(String userEmail) {
-        UserEmail = userEmail;
-    }
-
-    public void setUserName(String userName) {
-        UserName = userName;
-    }
-
-    public void setUserPass(String userPass) {
-        UserPass = userPass;
-    }
 }

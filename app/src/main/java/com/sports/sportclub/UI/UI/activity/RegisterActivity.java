@@ -1,4 +1,4 @@
-package com.sports.sportclub;
+package com.sports.sportclub.UI.UI.activity;
 
 import android.content.Intent;
 import android.graphics.Paint;
@@ -9,6 +9,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.sports.sportclub.R;
 import com.sports.sportclub.api.BmobService;
 import com.sports.sportclub.api.Client;
 

@@ -59,5 +59,8 @@
     <string name="noAppointment">还没有预约</string>
     <string name="gotoAppointment">发现精彩</string>
 
-
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <!-- This is for left navigation-->
+    <string name="intro">School of Software Engineering</string>
+    <string name="mail">info@edu.bjtu.cn</string>
 </resources>

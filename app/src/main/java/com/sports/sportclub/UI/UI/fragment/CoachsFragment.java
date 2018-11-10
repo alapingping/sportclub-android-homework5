@@ -1,25 +1,22 @@
-package com.sports.sportclub;
+package com.sports.sportclub.UI.UI.fragment;
 
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.Toast;
+
+import com.sports.sportclub.R;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.sports.sportclub.MySimpleAdapter.MySimpleAdapter;
 
 /**
  * A simple {@link Fragment} subclass.

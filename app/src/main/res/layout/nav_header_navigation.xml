@@ -12,7 +12,7 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
-    <com.sports.sportclub.CircleImageView.CircleImageView
+    <com.sports.sportclub.UI.UI.CircleImageView.CircleImageView
         android:id="@+id/imageView"
         android:layout_width="70dp"
         android:layout_height="70dp"
@@ -23,13 +23,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
-        android:text="School of Software Engineering"
+        android:text="@string/intro"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="info@edu.bjtu.cn" />
+        android:text="@string/mail" />
 
 </LinearLayout>

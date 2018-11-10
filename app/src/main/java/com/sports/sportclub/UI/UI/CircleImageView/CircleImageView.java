@@ -1,10 +1,9 @@
-package com.sports.sportclub.CircleImageView;
+package com.sports.sportclub.UI.UI.CircleImageView;
 
 import android.annotation.SuppressLint;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.BitmapShader;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -18,8 +17,6 @@ import android.graphics.drawable.Drawable;
 
 import android.util.AttributeSet;
 import android.widget.ImageView;
-
-import com.sports.sportclub.R;
 
 /**
  * Created by 16301 on 2018/10/4 0004.

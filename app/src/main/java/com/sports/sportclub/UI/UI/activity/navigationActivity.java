@@ -1,28 +1,34 @@
-package com.sports.sportclub;
+package com.sports.sportclub.UI.UI.activity;
 
 import android.content.Intent;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
-
-import android.view.KeyEvent;
-import android.view.View;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.ViewGroup;
+import android.view.View;
 import android.webkit.WebView;
 import android.widget.Toast;
+
+import com.sports.sportclub.UI.UI.fragment.AnnocementFragment;
+import com.sports.sportclub.UI.UI.fragment.AppointmentFragment;
+import com.sports.sportclub.UI.UI.fragment.CoachsFragment;
+import com.sports.sportclub.UI.UI.fragment.FavoriteFragment;
+import com.sports.sportclub.UI.UI.fragment.HomeFragment;
+import com.sports.sportclub.R;
+import com.sports.sportclub.UI.UI.fragment.RecommendFragment;
+import com.sports.sportclub.UI.UI.fragment.SchedulFragment;
 
 import cn.bmob.v3.BmobUser;
 
@@ -32,6 +38,8 @@ public class navigationActivity extends AppCompatActivity
 
     private boolean isExist = false;   //判断是否退出
     private String [] titles = {"Home","Announcement","Schedule","Favorite","Appointment"};
+    public static int currentPosition;
+    private static final String KEY_CURRENT_POSITION = "com.sports.sportclub.gridtopager.key.currentPosition";
 
 
 
@@ -50,6 +58,11 @@ public class navigationActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_left_navigation);
+        if (savedInstanceState != null) {
+            currentPosition = savedInstanceState.getInt(KEY_CURRENT_POSITION, 0);
+            // Return here to prevent adding additional GridFragments when changing orientation.
+            return;
+        }
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -261,6 +274,13 @@ public class navigationActivity extends AppCompatActivity
         Intent intent = new Intent(navigationActivity.this,LoginActivity.class);
         startActivity(intent);
         finish();
+    }
+
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(KEY_CURRENT_POSITION, currentPosition);
     }
 
 }

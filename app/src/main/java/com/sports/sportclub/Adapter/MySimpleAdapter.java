@@ -1,4 +1,4 @@
-package com.sports.sportclub.MySimpleAdapter;
+package com.sports.sportclub.Adapter;
 
 import android.content.Context;
 import android.view.View;
@@ -11,9 +11,6 @@ import com.sports.sportclub.R;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Created by 16301 on 2018/10/10 0010.
- */
 
 public class MySimpleAdapter extends SimpleAdapter {
 

@@ -1,4 +1,4 @@
-package com.sports.sportclub;
+package com.sports.sportclub.UI.UI.fragment;
 
 
 import android.os.Build;
@@ -11,6 +11,8 @@ import android.view.ViewGroup;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+
+import com.sports.sportclub.R;
 
 
 /**

@@ -1,4 +1,4 @@
-package com.sports.sportclub;
+package com.sports.sportclub.UI.UI.activity;
 
 import android.content.Intent;
 import android.graphics.Paint;
@@ -9,8 +9,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.sports.sportclub.DataModel.ResultBean;
 import com.sports.sportclub.DataModel.User;
+import com.sports.sportclub.R;
 import com.sports.sportclub.api.BmobService;
 import com.sports.sportclub.api.Client;
 
@@ -26,8 +26,6 @@ public class LoginActivity extends AppCompatActivity {
 
     private BmobUser current_user;
 
-    private ResultBean users;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,7 +36,7 @@ public class LoginActivity extends AppCompatActivity {
         * 验证本地缓存用户
         * 若用户存在，则免登陆
         * 否则需用户输入登陆信息
-        * */
+        */
         current_user = BmobUser.getCurrentUser();
         if(current_user != null){
             jump2main();

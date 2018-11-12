@@ -56,41 +56,40 @@ public class CoachsFragment extends Fragment {
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
         Map<String, Object> map = new HashMap<String, Object>();
 
-        map.put("coach_photo",R.drawable.user);
-        map.put("coach_name","ha");
-        map.put("coach_introduction","he");
+        map.put("coach_photo",R.drawable.coach_6);
+        map.put("coach_name","Sun Yang");
+        map.put("coach_introduction","champion coach");
         list.add(map);
 
         map = new HashMap<String, Object>();
-        map.put("coach_photo",R.drawable.password);
-        map.put("coach_name","heihei");
-        map.put("coach_introduction","hengheng");
+        map.put("coach_photo",R.drawable.coach_1);
+        map.put("coach_name","Zhang Yongping");
+        map.put("coach_introduction","beauty coach");
         list.add(map);
 
         map = new HashMap<String, Object>();
-        map.put("coach_photo",R.drawable.password);
-        map.put("coach_name","heihei");
-        map.put("coach_introduction","hengheng");
+        map.put("coach_photo",R.drawable.coach_2);
+        map.put("coach_name","Li Xingyuan");
+        map.put("coach_introduction","exercise coach");
         list.add(map);
 
         map = new HashMap<String, Object>();
-        map.put("coach_photo",R.drawable.password);
-        map.put("coach_name","heihei");
-        map.put("coach_introduction","hengheng");
+        map.put("coach_photo",R.drawable.coach_3);
+        map.put("coach_name","He Yalun");
+        map.put("coach_introduction","basketball coach");
         list.add(map);
 
         map = new HashMap<String, Object>();
-        map.put("coach_photo",R.drawable.password);
-        map.put("coach_name","heihei");
-        map.put("coach_introduction","hengheng");
+        map.put("coach_photo",R.drawable.coach_4);
+        map.put("coach_name","Zhao Zihan");
+        map.put("coach_introduction","tennis coach");
         list.add(map);
 
         map = new HashMap<String, Object>();
-        map.put("coach_photo",R.drawable.password);
-        map.put("coach_name","heihei");
-        map.put("coach_introduction","hengheng");
+        map.put("coach_photo",R.drawable.coach_5);
+        map.put("coach_name","Sun Shou");
+        map.put("coach_introduction","fat coach");
         list.add(map);
-
         return list;
     }
 

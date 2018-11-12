@@ -51,8 +51,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:baselineAligned="false"
+                android:orientation="horizontal"
                 android:weightSum="3">
 
                 <LinearLayout
@@ -68,8 +68,8 @@
                         android:layout_height="30dp"
                         android:layout_gravity="center"
                         android:layout_marginTop="20dp"
-                        app:srcCompat="@drawable/ic_icon_boxing"
-                        android:tint="@color/colorWhite" />
+                        android:tint="@color/colorWhite"
+                        app:srcCompat="@drawable/ic_icon_boxing" />
 
                     <TextView
                         android:layout_width="match_parent"
@@ -97,8 +97,8 @@
                         android:layout_height="30dp"
                         android:layout_gravity="center"
                         android:layout_marginTop="20dp"
-                        app:srcCompat="@drawable/ic_icon_football"
-                        android:tint="@color/colorWhite" />
+                        android:tint="@color/colorWhite"
+                        app:srcCompat="@drawable/ic_icon_football" />
 
                     <TextView
                         android:layout_width="match_parent"
@@ -126,8 +126,8 @@
                         android:layout_height="30dp"
                         android:layout_gravity="center"
                         android:layout_marginTop="20dp"
-                        app:srcCompat="@drawable/ic_icon_lontenis"
-                        android:tint="@color/colorWhite" />
+                        android:tint="@color/colorWhite"
+                        app:srcCompat="@drawable/ic_icon_lontenis" />
 
                     <TextView
                         android:layout_width="match_parent"

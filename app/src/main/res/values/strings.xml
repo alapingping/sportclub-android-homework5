@@ -53,6 +53,7 @@
     <string name="title_home">主页</string>
     <string name="title_dashboard">推荐</string>
     <string name="title_coaches">教练</string>
+    <string name="title_find">发现</string>
     <string name="title_activity_tabbed">TabbedActivity</string>
     <string name="section_format">Hello World from section: %1$d</string>
 

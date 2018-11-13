@@ -28,8 +28,11 @@ import com.sports.sportclub.UI.UI.fragment.AnnocementFragment;
 import com.sports.sportclub.UI.UI.fragment.AppointmentFragment;
 import com.sports.sportclub.UI.UI.fragment.CoachsFragment;
 import com.sports.sportclub.UI.UI.fragment.FavoriteFragment;
+import com.sports.sportclub.UI.UI.fragment.FindFragment;
 import com.sports.sportclub.UI.UI.fragment.HomeFragment;
 import com.sports.sportclub.R;
+import com.sports.sportclub.UI.UI.fragment.ImageFragment;
+import com.sports.sportclub.UI.UI.fragment.ImagePagerFragment;
 import com.sports.sportclub.UI.UI.fragment.RecommendFragment;
 import com.sports.sportclub.UI.UI.fragment.SchedulFragment;
 
@@ -208,6 +211,14 @@ public class navigationActivity extends AppCompatActivity
                             .setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
                     setActionBarTitle(-1,3);
                     return true;
+                case R.id.navigation_find:
+                    //禁用侧滑功能
+                    changeFragment(R.id.frame_content,new FindFragment());
+                    ((DrawerLayout)findViewById(R.id.drawer_layout))
+                            .setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+                    setActionBarTitle(-1,4
+                    );
+                    return true;
             }
             return false;
         }
@@ -248,6 +259,11 @@ public class navigationActivity extends AppCompatActivity
                 System.exit(0);
             }
         }
+        else if(fragment instanceof ImagePagerFragment){
+            String nnn = "";
+            return false;
+        }
+
         //对其余界面的处理
         else{
             if(!isExist) {
@@ -273,9 +289,10 @@ public class navigationActivity extends AppCompatActivity
             toolbar.setTitle(titles[position]);
         }else if(page_num == 2){
             toolbar.setTitle("推荐");
-        }else {
+        }else if(page_num == 3){
             toolbar.setTitle("教练");
-        }
+        }else
+            toolbar.setTitle("发现");
 
 
     }

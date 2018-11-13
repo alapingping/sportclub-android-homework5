@@ -15,10 +15,12 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -65,9 +67,7 @@ public class navigationActivity extends AppCompatActivity
             return;
         }
 
-        String username = getIntent().getStringExtra("username");
-        TextView nav_username = findViewById(R.id.nav_username);
-        nav_username.setText(username);
+
 
 
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -90,6 +90,12 @@ public class navigationActivity extends AppCompatActivity
         //设置底部导航按钮
         BottomNavigationView navigation = findViewById(R.id.bottom_navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+
+        View headerLayout = navigationView.getHeaderView(0);
+
+        String username = getIntent().getStringExtra("username");
+        TextView nav_username = headerLayout.findViewById(R.id.nav_username);
+        nav_username.setText(username);
 
         //设置初始片段为HomeFragment
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();

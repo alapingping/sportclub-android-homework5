@@ -37,11 +37,11 @@ public class LoginActivity extends AppCompatActivity {
         * 若用户存在，则免登陆
         * 否则需用户输入登陆信息
         */
-        current_user = BmobUser.getCurrentUser();
-        if(current_user != null){
-            jump2main();
-        }
-        else{
+//        current_user = BmobUser.getCurrentUser();
+//        if(current_user != null){
+//            jump2main();
+//        }
+
             //设置下划线
             TextView forget_text = findViewById(R.id.forget_text);
             forget_text.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG);
@@ -63,7 +63,7 @@ public class LoginActivity extends AppCompatActivity {
                 }
             });
         }
-    }
+
 
     //登陆按钮的跳转
     public void onClickSignin(View view) {
@@ -82,7 +82,7 @@ public class LoginActivity extends AppCompatActivity {
 
                 if(response.code() == 200){
                     showmsg("登陆成功");
-                    jump2main();
+                    jump2main(username);
                 }
                 else if(response.code() == 400) {
                     showmsg("用户名或密码错误");
@@ -128,8 +128,9 @@ public class LoginActivity extends AppCompatActivity {
         Toast.makeText(LoginActivity.this,msg,Toast.LENGTH_LONG).show();
     }
     //跳转至主界面
-    public void jump2main(){
+    public void jump2main(String username){
         Intent intent = new Intent(this,navigationActivity.class);
+        intent.putExtra("username",username);
         startActivity(intent);
         finish();
     }

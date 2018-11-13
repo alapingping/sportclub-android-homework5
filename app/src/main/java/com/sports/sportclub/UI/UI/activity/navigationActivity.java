@@ -19,6 +19,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.sports.sportclub.UI.UI.fragment.AnnocementFragment;
@@ -63,6 +64,12 @@ public class navigationActivity extends AppCompatActivity
             // Return here to prevent adding additional GridFragments when changing orientation.
             return;
         }
+
+        String username = getIntent().getStringExtra("username");
+        TextView nav_username = findViewById(R.id.nav_username);
+        nav_username.setText(username);
+
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 

@@ -1,12 +1,16 @@
 package com.sports.sportclub.UI.UI.activity;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
@@ -24,6 +28,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.baidu.mapapi.SDKInitializer;
 import com.sports.sportclub.UI.UI.fragment.AnnocementFragment;
 import com.sports.sportclub.UI.UI.fragment.AppointmentFragment;
 import com.sports.sportclub.UI.UI.fragment.CoachsFragment;
@@ -46,8 +51,10 @@ public class navigationActivity extends AppCompatActivity
     private String [] titles = {"Home","Announcement","Schedule","Favorite","Appointment"};
     public static int currentPosition;
     private static final String KEY_CURRENT_POSITION = "com.sports.sportclub.gridtopager.key.currentPosition";
-
-
+    private static final int REQUEST_EXTERNAL_STORAGE = 1;
+    private static String[] PERMISSIONS_STORAGE = {
+            Manifest.permission.ACCESS_COARSE_LOCATION,
+            Manifest.permission.ACCESS_FINE_LOCATION};
 
     //处理退出信息的Handler
     Handler exit_handler = new Handler(){
@@ -70,7 +77,8 @@ public class navigationActivity extends AppCompatActivity
             return;
         }
 
-
+        SDKInitializer.initialize(getApplicationContext());
+        verifyStoragePermissions(this);
 
 
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -141,7 +149,7 @@ public class navigationActivity extends AppCompatActivity
     }
 
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         //处理左侧导航抽屉点击事件
         int id = item.getItemId();
         int position = -1;
@@ -183,46 +191,42 @@ public class navigationActivity extends AppCompatActivity
 
     //设置底端导航按钮响应事件
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
-            = new BottomNavigationView.OnNavigationItemSelectedListener() {
-
-        @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            switch (item.getItemId()) {
-                case R.id.navigation_home:
-                    //打开侧滑功能
-                    changeFragment(R.id.frame_content,new HomeFragment());
-                    ((DrawerLayout)findViewById(R.id.drawer_layout))
-                            .setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
-                    setActionBarTitle(-1,1);
-                    NavigationView navigationView = findViewById(R.id.nav_view);
-                    navigationView.setCheckedItem(R.id.navigation_home);
-                    return true;
-                case R.id.navigation_dashboard:
-                    //禁用侧滑功能
-                    changeFragment(R.id.frame_content,new RecommendFragment());
-                    ((DrawerLayout)findViewById(R.id.drawer_layout))
-                            .setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
-                    setActionBarTitle(-1,2);
-                    return true;
-                case R.id.navigation_coaches:
-                    //禁用侧滑功能
-                    changeFragment(R.id.frame_content,new CoachsFragment());
-                    ((DrawerLayout)findViewById(R.id.drawer_layout))
-                            .setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
-                    setActionBarTitle(-1,3);
-                    return true;
-                case R.id.navigation_find:
-                    //禁用侧滑功能
-                    changeFragment(R.id.frame_content,new FindFragment());
-                    ((DrawerLayout)findViewById(R.id.drawer_layout))
-                            .setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
-                    setActionBarTitle(-1,4
-                    );
-                    return true;
-            }
-            return false;
-        }
-    };
+            = item -> {
+                switch (item.getItemId()) {
+                    case R.id.navigation_home:
+                        //打开侧滑功能
+                        changeFragment(R.id.frame_content,new HomeFragment());
+                        ((DrawerLayout)findViewById(R.id.drawer_layout))
+                                .setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+                        setActionBarTitle(-1,1);
+                        NavigationView navigationView = findViewById(R.id.nav_view);
+                        navigationView.setCheckedItem(R.id.navigation_home);
+                        return true;
+                    case R.id.navigation_dashboard:
+                        //禁用侧滑功能
+                        changeFragment(R.id.frame_content,new RecommendFragment());
+                        ((DrawerLayout)findViewById(R.id.drawer_layout))
+                                .setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+                        setActionBarTitle(-1,2);
+                        return true;
+                    case R.id.navigation_coaches:
+                        //禁用侧滑功能
+                        changeFragment(R.id.frame_content,new CoachsFragment());
+                        ((DrawerLayout)findViewById(R.id.drawer_layout))
+                                .setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+                        setActionBarTitle(-1,3);
+                        return true;
+                    case R.id.navigation_find:
+                        //禁用侧滑功能
+                        changeFragment(R.id.frame_content,new FindFragment());
+                        ((DrawerLayout)findViewById(R.id.drawer_layout))
+                                .setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+                        setActionBarTitle(-1,4
+                        );
+                        return true;
+                }
+                return false;
+            };
 
     /**
      * 切换片段所用方法
@@ -246,7 +250,7 @@ public class navigationActivity extends AppCompatActivity
           * 若是处于其他页面，则在两秒内双击两次返回键退出程序
          */
         if(fragment instanceof RecommendFragment){
-            WebView webView = (WebView)fragment.getView().findViewById(R.id.recommed_web);
+            WebView webView = fragment.getView().findViewById(R.id.recommed_web);
             if(webView.canGoBack()){
                 webView.goBack();
             } else if(!isExist){
@@ -311,6 +315,15 @@ public class navigationActivity extends AppCompatActivity
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(KEY_CURRENT_POSITION, currentPosition);
+    }
+
+    public static void verifyStoragePermissions(Activity activity) {
+        int permission = ActivityCompat.checkSelfPermission(activity,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(activity, PERMISSIONS_STORAGE,
+                    REQUEST_EXTERNAL_STORAGE);
+        }
     }
 
 }

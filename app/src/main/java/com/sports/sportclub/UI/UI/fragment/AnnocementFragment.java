@@ -1,7 +1,7 @@
 package com.sports.sportclub.UI.UI.fragment;
 
 
-import android.location.Location;
+import com.sports.sportclub.Data.PoiOverlay;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 
@@ -9,6 +9,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.baidu.location.BDAbstractLocationListener;
 import com.baidu.location.BDLocation;
@@ -21,6 +24,15 @@ import com.baidu.mapapi.map.BitmapDescriptorFactory;
 import com.baidu.mapapi.map.MapView;
 import com.baidu.mapapi.map.MyLocationConfiguration;
 import com.baidu.mapapi.map.MyLocationData;
+import com.baidu.mapapi.search.core.PoiInfo;
+import com.baidu.mapapi.search.poi.OnGetPoiSearchResultListener;
+import com.baidu.mapapi.search.poi.PoiCitySearchOption;
+import com.baidu.mapapi.search.poi.PoiDetailResult;
+import com.baidu.mapapi.search.poi.PoiDetailSearchOption;
+import com.baidu.mapapi.search.poi.PoiDetailSearchResult;
+import com.baidu.mapapi.search.poi.PoiIndoorResult;
+import com.baidu.mapapi.search.poi.PoiResult;
+import com.baidu.mapapi.search.poi.PoiSearch;
 import com.sports.sportclub.R;
 
 import java.util.List;
@@ -44,8 +56,10 @@ public class AnnocementFragment extends Fragment {
     public LocationClient mLocationClient = null;
     //自定义定位监听器
     public BDAbstractLocationListener myListener = new MyLocationListener();
+    //Poi检索
+    PoiSearch mPoiSearch;
 
-
+    String position;
     public AnnocementFragment() {
         // Required empty public constructor
     }
@@ -57,6 +71,23 @@ public class AnnocementFragment extends Fragment {
         // Inflate the layout for this fragment
 
         View view = inflater.inflate(R.layout.fragment_annocement, container, false);
+        TextView position_text = view.findViewById(R.id.target);
+        position = position_text.getText().toString();
+        Button searchBtn = view.findViewById(R.id.buttonserach);
+        searchBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mPoiSearch = PoiSearch.newInstance();
+                position = position_text.getText().toString();
+                mPoiSearch.setOnGetPoiSearchResultListener(poiListener);
+                mPoiSearch.searchInCity((new PoiCitySearchOption())
+                        .city("北京")
+                        .keyword(position)
+                        .pageNum(10));
+            }
+        });
+
+
         mMapView = view.findViewById(R.id.mmap);
 
 
@@ -76,6 +107,44 @@ public class AnnocementFragment extends Fragment {
 
         return view;
     }
+
+    OnGetPoiSearchResultListener poiListener = new OnGetPoiSearchResultListener(){
+        @Override
+        public void onGetPoiResult(PoiResult result){
+            //获取POI检索结果
+            {
+                //如果搜索到的结果不为空，并且没有错误
+                if (result != null && result.error == PoiResult.ERRORNO.NO_ERROR) {
+                    MyOverLay overlay = new MyOverLay(mBaiduMap, mPoiSearch);//这传入search对象，因为一般搜索到后，点击时方便发出详细搜索
+                    //设置数据,这里只需要一步，
+                    overlay.setData(result);
+                    //添加到地图
+                    overlay.addToMap();
+                    //将显示视图拉倒正好可以看到所有POI兴趣点的缩放等级
+                    overlay.zoomToSpan();//计算工具
+                    //设置标记物的点击监听事件
+                    mBaiduMap.setOnMarkerClickListener(overlay);
+                    mPoiSearch.destroy();
+                } else {
+                    Toast.makeText(getActivity(), "搜索不到你需要的信息！", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+
+        public void onGetPoiDetailResult(PoiDetailResult result){
+            //获取Place详情页检索结果
+        }
+
+        @Override
+        public void onGetPoiDetailResult(PoiDetailSearchResult poiDetailSearchResult) {
+
+        }
+
+        @Override
+        public void onGetPoiIndoorResult(PoiIndoorResult poiIndoorResult) {
+
+        }
+    };
 
     private void initLocation(){
 
@@ -231,6 +300,29 @@ public class AnnocementFragment extends Fragment {
         }
     }
 
+    public class MyOverLay extends PoiOverlay {
+        /**
+         * 构造函数
+         */
+        PoiSearch poiSearch;
+        public MyOverLay(BaiduMap baiduMap, PoiSearch poiSearch) {
+            super(mBaiduMap);
+            this.poiSearch = poiSearch;
+        }
+        /**
+         * 覆盖物被点击时
+         */
+        @Override
+        public boolean onPoiClick(int i) {
+            //获取点击的标记物的数据
+            PoiInfo poiInfo = getPoiResult().getAllPoi().get(i);
+            Log.e("TAG", poiInfo.name + "   " + poiInfo.address + "   " + poiInfo.phoneNum);
+            //  发起一个详细检索,要使用uid
+            poiSearch.searchPoiDetail(new PoiDetailSearchOption().poiUid(poiInfo.uid));
+            return true;
+        }
+    }
+
     @Override
     public void onStop()
     {
@@ -250,7 +342,10 @@ public class AnnocementFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        mBaiduMap.clear();
         mMapView.onDestroy();
+        mPoiSearch.destroy();
+        mMapView = null;
     }
 
 }

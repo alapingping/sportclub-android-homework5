@@ -64,4 +64,7 @@
     <!-- This is for left navigation-->
     <string name="intro">School of Software Engineering</string>
     <string name="mail">info@edu.bjtu.cn</string>
+    <!-- This is for left map-->
+    <string name="Input">Input you want to find</string>
+    <string name="search">Search</string>
 </resources>

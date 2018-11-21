@@ -1,17 +1,42 @@
 package com.sports.sportclub.UI.UI.fragment;
 
 
+import com.baidu.mapapi.search.core.SearchResult;
+import com.baidu.mapapi.search.route.BikingRoutePlanOption;
+import com.baidu.mapapi.search.route.BikingRouteResult;
+import com.baidu.mapapi.search.route.DrivingRoutePlanOption;
+import com.baidu.mapapi.search.route.DrivingRouteResult;
+import com.baidu.mapapi.search.route.IndoorRouteResult;
+import com.baidu.mapapi.search.route.MassTransitRouteResult;
+import com.baidu.mapapi.search.route.OnGetRoutePlanResultListener;
+import com.baidu.mapapi.search.route.PlanNode;
+import com.baidu.mapapi.search.route.RoutePlanSearch;
+import com.baidu.mapapi.search.route.TransitRouteResult;
+import com.baidu.mapapi.search.route.WalkingRoutePlanOption;
+import com.baidu.mapapi.search.route.WalkingRouteResult;
+import com.baidu.mapapi.search.sug.OnGetSuggestionResultListener;
+import com.baidu.mapapi.search.sug.SuggestionResult;
+import com.baidu.mapapi.search.sug.SuggestionSearch;
+import com.baidu.mapapi.search.sug.SuggestionSearchOption;
+import com.baidu.mapapi.utils.DistanceUtil;
 import com.baidu.navisdk.adapter.BaiduNaviManagerFactory;
 import com.baidu.navisdk.adapter.IBaiduNaviManager;
-import com.sports.sportclub.Data.PoiOverlay;
+
+//注意AlertDialog不能导入v7的包，不然会报找不到资源的错误
+import android.app.AlertDialog;
+
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+
 
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,7 +62,16 @@ import com.baidu.mapapi.search.poi.PoiResult;
 import com.baidu.mapapi.search.poi.PoiSearch;
 import com.sports.sportclub.R;
 
+import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Queue;
+
+import com.sports.sportclub.overlayutil.PoiOverlay;
+import com.sports.sportclub.overlayutil.OverlayManager;
+import com.sports.sportclub.overlayutil.BikingRouteOverlay;
+import com.sports.sportclub.overlayutil.DrivingRouteOverlay;
+import com.sports.sportclub.overlayutil.WalkingRouteOverlay;
 
 import static cn.bmob.v3.Bmob.getApplicationContext;
 
@@ -59,8 +93,42 @@ public class AnnocementFragment extends Fragment {
     //自定义定位监听器
     public BDAbstractLocationListener myListener = new MyLocationListener();
     //Poi检索
-    PoiSearch mPoiSearch;
+    private PoiSearch mPoiSearch;
+    //步行路线规划
+    private RoutePlanSearch mSearch;
+    //弹出单选框
+    AlertDialog dialog;
+    //地图模式
+    enum MAP_MODE{
+        MAP_NORMAL, MAP_SATELLITE, MAP_NONE
+    }
+    //当前地图模式
+    private MAP_MODE cur_map_mode = MAP_MODE.MAP_NORMAL;
+    //路线规划方式
+    enum ROUTE_MODE{
+        walking, riding, driving
+    }
+    //当前出行方式
+    private ROUTE_MODE cur_route_mode = ROUTE_MODE.walking;
+    //路线规划方式
+    enum LOCATION_MODE{
+        NORMAL, FOLLOWING, COMPASS
+    }
+    //当前出行方式
+    private LOCATION_MODE cur_location_mode = LOCATION_MODE.NORMAL;
 
+    //三种覆盖物
+    WalkingRouteOverlay walkingRouteOverlay = null;
+    BikingRouteOverlay bikingRouteOverlay = null;
+    DrivingRouteOverlay drivingRouteOverlay = null;
+
+    //热力图开关
+    boolean Hot_Map_Open = false;
+
+    //sug检索
+    SuggestionSearch mSuggestionSearch;
+
+    //我好笨
     String position;
     public AnnocementFragment() {
         // Required empty public constructor
@@ -73,8 +141,10 @@ public class AnnocementFragment extends Fragment {
         // Inflate the layout for this fragment
 
         View view = inflater.inflate(R.layout.fragment_annocement, container, false);
-        TextView position_text = view.findViewById(R.id.target);
+        EditText position_text = view.findViewById(R.id.target);
         position = position_text.getText().toString();
+
+
         Button searchBtn = view.findViewById(R.id.buttonserach);
         searchBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -86,6 +156,20 @@ public class AnnocementFragment extends Fragment {
                         .city("北京")
                         .keyword(position)
                         .pageNum(10));
+            }
+        });
+        Button routeBtn = view.findViewById(R.id.buttonroute);
+        routeBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String start = "西二旗地铁站";
+                String end = "百度科技园";
+                String city = "北京";
+                if (city == null || city.equals("")) {
+                    city = "北京";
+                }
+                routePlan(start, end, city);
+
             }
         });
 
@@ -104,9 +188,52 @@ public class AnnocementFragment extends Fragment {
         mLocationClient = new LocationClient(getApplicationContext());
         //声明LocationClient类
         initLocation();
-        mLocationClient.registerLocationListener( myListener);
+        mLocationClient.registerLocationListener(myListener);
         mLocationClient.start();
 
+//        mSuggestionSearch = SuggestionSearch.newInstance();
+//        mSuggestionSearch.setOnGetSuggestionResultListener(suglistener);
+//        mSuggestionSearch.requestSuggestion((new SuggestionSearchOption())
+//                .keyword("百度")
+//                .city("北京"));
+
+
+        Button switchBtn = view.findViewById(R.id.buttonswitch);
+        switchBtn.setOnClickListener(v -> {
+            switch(cur_location_mode) {
+                case NORMAL:
+                    cur_location_mode = LOCATION_MODE.COMPASS;
+                    mCurrentMode = MyLocationConfiguration.LocationMode.COMPASS;
+                    break;
+                case COMPASS:
+                    cur_location_mode = LOCATION_MODE.FOLLOWING;
+                    mCurrentMode = MyLocationConfiguration.LocationMode.FOLLOWING;
+                    break;
+                case FOLLOWING:
+                    cur_location_mode = LOCATION_MODE.NORMAL;
+                    mCurrentMode = MyLocationConfiguration.LocationMode.NORMAL;
+                    break;
+            }
+        });
+
+        Button mapmodeBtn = view.findViewById(R.id.buttonchoose_map_mode);
+        mapmodeBtn.setOnClickListener(v -> {
+            //初始化单选框
+            createDialog();
+            dialog.show();
+        });
+
+        Button hotmapBtn = view.findViewById(R.id.button_hot_map);
+        hotmapBtn.setOnClickListener(v -> {
+            if(Hot_Map_Open){
+                Hot_Map_Open = false;
+                mBaiduMap.setTrafficEnabled(false);
+            }
+            else{
+                Hot_Map_Open = true;
+                mBaiduMap.setTrafficEnabled(true);
+            }
+        });
         return view;
     }
 
@@ -145,6 +272,147 @@ public class AnnocementFragment extends Fragment {
         @Override
         public void onGetPoiIndoorResult(PoiIndoorResult poiIndoorResult) {
 
+        }
+    };
+
+    OnGetRoutePlanResultListener listener = new OnGetRoutePlanResultListener() {
+        //获取步行线路规划结果
+        @Override
+        public void onGetWalkingRouteResult(WalkingRouteResult result) {
+            if (result == null || result.error != SearchResult.ERRORNO.NO_ERROR) {
+                Toast.makeText(getActivity(), "抱歉，未找到结果",
+                        Toast.LENGTH_SHORT).show();
+            }
+            if (result.error == SearchResult.ERRORNO.AMBIGUOUS_ROURE_ADDR) {
+                // 起终点或途经点地址有岐义，通过以下接口获取建议查询信息
+                // result.getSuggestAddrInfo()
+                return;
+            }
+            if (result.error == SearchResult.ERRORNO.NO_ERROR) {
+                removeOverlay();
+                walkingRouteOverlay = new WalkingRouteOverlay(
+                        mBaiduMap);
+                mBaiduMap.setOnMarkerClickListener(walkingRouteOverlay);
+                walkingRouteOverlay.setData(result.getRouteLines().get(0));
+                walkingRouteOverlay.addToMap();
+                walkingRouteOverlay.zoomToSpan();
+                mSearch.destroy();
+                //Toast.makeText(GuideActivity.this,"点击图标会有指示哦～",
+                //        Toast.LENGTH_SHORT).show();
+            }
+        }
+        //获取综合公共交通线路规划结果
+        @Override
+        public void onGetTransitRouteResult(TransitRouteResult transitRouteResult) {
+        }
+        //获取**跨城**综合公共交通线路规划结果
+        @Override
+        public void onGetMassTransitRouteResult(MassTransitRouteResult massTransitRouteResult) {
+        }
+        //获取驾车线路规划结果
+        @Override
+        public void onGetDrivingRouteResult(DrivingRouteResult drivingRouteResult) {
+            if (drivingRouteResult == null || drivingRouteResult.error != SearchResult.ERRORNO.NO_ERROR) {
+                Toast.makeText(getActivity(), "抱歉，未找到结果",
+                        Toast.LENGTH_SHORT).show();
+            }
+            if (drivingRouteResult.error == SearchResult.ERRORNO.AMBIGUOUS_ROURE_ADDR) {
+                // 起终点或途经点地址有岐义，通过以下接口获取建议查询信息
+                // result.getSuggestAddrInfo()
+                return;
+            }
+            if (drivingRouteResult.error == SearchResult.ERRORNO.NO_ERROR) {
+                removeOverlay();
+                drivingRouteOverlay = new DrivingRouteOverlay(
+                        mBaiduMap);
+                mBaiduMap.setOnMarkerClickListener(drivingRouteOverlay);
+                drivingRouteOverlay.setData(drivingRouteResult.getRouteLines().get(0));
+                drivingRouteOverlay.addToMap();
+                drivingRouteOverlay.zoomToSpan();
+                mSearch.destroy();
+                //Toast.makeText(GuideActivity.this,"点击图标会有指示哦～",
+                //        Toast.LENGTH_SHORT).show();
+            }
+        }
+        //室内路线规划结果
+        @Override
+        public void onGetIndoorRouteResult(IndoorRouteResult indoorRouteResult) {
+        }
+        //获取普通骑行路规划结果
+        @Override
+        public void onGetBikingRouteResult(BikingRouteResult bikingRouteResult) {
+            if (bikingRouteResult == null || bikingRouteResult.error != SearchResult.ERRORNO.NO_ERROR) {
+                Toast.makeText(getActivity(), "抱歉，未找到结果",
+                        Toast.LENGTH_SHORT).show();
+            }
+            if (bikingRouteResult.error == SearchResult.ERRORNO.AMBIGUOUS_ROURE_ADDR) {
+                // 起终点或途经点地址有岐义，通过以下接口获取建议查询信息
+                // result.getSuggestAddrInfo()
+                return;
+            }
+            if (bikingRouteResult.error == SearchResult.ERRORNO.NO_ERROR) {
+                removeOverlay();
+                bikingRouteOverlay = new BikingRouteOverlay(
+                        mBaiduMap);
+                mBaiduMap.setOnMarkerClickListener(bikingRouteOverlay);
+                bikingRouteOverlay.setData(bikingRouteResult.getRouteLines().get(0));
+                bikingRouteOverlay.addToMap();
+                bikingRouteOverlay.zoomToSpan();
+                mSearch.destroy();
+                //Toast.makeText(GuideActivity.this,"点击图标会有指示哦～",
+                //        Toast.LENGTH_SHORT).show();
+            }
+        }
+    };
+
+    OnGetSuggestionResultListener suglistener = new OnGetSuggestionResultListener() {
+
+
+        @Override
+        public void onGetSuggestionResult(SuggestionResult msg) {
+            // TODO Auto-generated method stub
+            if (msg == null || msg.getAllSuggestions() == null) {
+                Toast.makeText(getActivity(), "未检索到当前地址",Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+//            if (list != null) {
+//                list.clear();
+//            }
+//
+//            if (lists != null) {
+//                lists.clear();
+//            }
+//
+//            if (listjl != null) {
+//                listjl.clear();
+//            }
+//
+//            if (listinfo != null) {
+//                listinfo.clear();
+//            }
+            List<String> list = new ArrayList<>();
+            List<SuggestionResult.SuggestionInfo> listinfo = new ArrayList<>();
+            List<String> lists = new ArrayList<>();
+            List<String> listjl = new ArrayList<>();
+
+            for (SuggestionResult.SuggestionInfo info : msg.getAllSuggestions()) {
+                if (info.pt == null) continue;
+                Log.e("info.ccity", "info.city" + info.city + "info.district" + info.district + "info.key" + info.key);
+                listinfo.add(info);
+                list.add(info.key);
+                lists.add(info.city + info.district + info.key);
+                DecimalFormat df = new DecimalFormat("######0");
+                String distance = df.format(DistanceUtil.getDistance(listinfo.get(0).pt, info.pt));
+                listjl.add(distance);
+            }
+//            adapter_list_Address = new Adapter_list_Address(getActivity(), list, lists, listjl);
+//            lvAddress.setAdapter(adapter_list_Address);
+//            adapter_list_Address.notifyDataSetChanged();
+            if (listinfo.size() == 0) {
+                Toast.makeText(getActivity(), "未检索到当前地址", Toast.LENGTH_SHORT).show();
+                return;
+            }
         }
     };
 
@@ -325,6 +593,81 @@ public class AnnocementFragment extends Fragment {
         }
     }
 
+//    private class MyWalkingRouteOverlay extends WalkingRouteOverlay {
+//        public MyWalkingRouteOverlay(BaiduMap baiduMap) {
+//            super(baiduMap);
+//        }
+//        @Override
+//        public BitmapDescriptor getStartMarker() {
+//            if (true) {
+//                return BitmapDescriptorFactory.fromResource(R.drawable.position2);
+//            }
+//            return null;
+//        }
+//        @Override
+//        public BitmapDescriptor getTerminalMarker() {
+//            if (true) {
+//                return BitmapDescriptorFactory.fromResource(R.drawable.position2);
+//            }
+//            return null;
+//        }
+//    }
+//
+//    private class MyBikingRouteOverlay extends BikingRouteOverlay {
+//        public MyBikingRouteOverlay(BaiduMap baiduMap) {
+//            super(baiduMap);
+//        }
+//        @Override
+//        public BitmapDescriptor getStartMarker() {
+//            if (true) {
+//                return BitmapDescriptorFactory.fromResource(R.drawable.position2);
+//            }
+//            return null;
+//        }
+//        @Override
+//        public BitmapDescriptor getTerminalMarker() {
+//            if (true) {
+//                return BitmapDescriptorFactory.fromResource(R.drawable.position2);
+//            }
+//            return null;
+//        }
+//    }
+//
+//    private class MyDrivingRouteOverlay extends DrivingRouteOverlay {
+//        public MyDrivingRouteOverlay(BaiduMap baiduMap) {
+//            super(baiduMap);
+//        }
+//        @Override
+//        public BitmapDescriptor getStartMarker() {
+//            if (true) {
+//                return BitmapDescriptorFactory.fromResource(R.drawable.position2);
+//            }
+//            return null;
+//        }
+//        @Override
+//        public BitmapDescriptor getTerminalMarker() {
+//            if (true) {
+//                return BitmapDescriptorFactory.fromResource(R.drawable.position2);
+//            }
+//            return null;
+//        }
+//    }
+
+    public void routePlan(String start, String end, String city) {
+        mSearch = RoutePlanSearch.newInstance();
+        mSearch.setOnGetRoutePlanResultListener(listener);
+        // 起点与终点
+        PlanNode stNode = PlanNode.withCityNameAndPlaceName(city, start);
+        PlanNode enNode = PlanNode.withCityNameAndPlaceName(city, end);
+
+       // DistanceUtil.getDistance()
+
+        // 路线规划
+        createRouteDialog(stNode,enNode);
+        dialog.show();
+    }
+
+
     @Override
     public void onStop()
     {
@@ -348,6 +691,88 @@ public class AnnocementFragment extends Fragment {
         mMapView.onDestroy();
         mPoiSearch.destroy();
         mMapView = null;
+    }
+
+    public void createDialog(){
+        final String items[] = {"普通地图", "卫星图", "空白地图"};
+        dialog = new AlertDialog.Builder(getContext())
+                .setIcon(R.drawable.position)//设置标题的图片
+                .setTitle("请选择地图模式")//设置对话框的标题
+                .setSingleChoiceItems(items, 0, (dialog, which) -> {
+                    switch (which){
+                        case 0:
+                            cur_map_mode = MAP_MODE.MAP_NORMAL;
+                            break;
+                        case 1:
+                            cur_map_mode = MAP_MODE.MAP_SATELLITE;
+                            break;
+                        case 2:
+                            cur_map_mode = MAP_MODE.MAP_NONE;
+                            break;
+                    }
+                })
+                .setNegativeButton("取消", (dialog, which) -> dialog.dismiss())
+                .setPositiveButton("确定", (dialog, which) -> {
+                    switch (cur_map_mode){
+                        case MAP_NORMAL:
+                            mBaiduMap.setMapType(BaiduMap.MAP_TYPE_NORMAL);
+                            break;
+                        case MAP_SATELLITE:
+                            mBaiduMap.setMapType(BaiduMap.MAP_TYPE_SATELLITE);
+                            break;
+                        case MAP_NONE:
+                            mBaiduMap.setMapType(BaiduMap.MAP_TYPE_NONE);
+                            break;
+                    }
+                    dialog.dismiss();
+                }).create();
+    }
+
+    public void createRouteDialog(PlanNode stNode, PlanNode enNode){
+        final String items[] = {"步行", "骑行", "驾车"};
+        dialog = new AlertDialog.Builder(getContext())
+                .setIcon(R.drawable.position)//设置标题的图片
+                .setTitle("请选择出行模式")//设置对话框的标题
+                .setSingleChoiceItems(items, 0, (dialog, which) -> {
+                    switch (which){
+                        case 0:
+                            cur_route_mode = ROUTE_MODE.walking;
+                            break;
+                        case 1:
+                            cur_route_mode = ROUTE_MODE.riding;
+                            break;
+                        case 2:
+                            cur_route_mode = ROUTE_MODE.driving;
+                            break;
+                    }
+                })
+                .setNegativeButton("取消", (dialog, which) -> dialog.dismiss())
+                .setPositiveButton("确定", (dialog, which) -> {
+                    switch (cur_route_mode){
+                        case walking:
+                            mSearch.walkingSearch(new WalkingRoutePlanOption().from(
+                                    stNode).to(enNode));
+                            break;
+                        case riding:
+                            mSearch.bikingSearch(new BikingRoutePlanOption().from(
+                                    stNode).to(enNode));
+                            break;
+                        case driving:
+                            mSearch.drivingSearch(new DrivingRoutePlanOption().from(
+                                    stNode).to(enNode));
+                            break;
+                    }
+                    dialog.dismiss();
+                }).create();
+    }
+
+    private void removeOverlay(){
+        if(walkingRouteOverlay != null)
+            walkingRouteOverlay.removeFromMap();
+        if(bikingRouteOverlay != null)
+            bikingRouteOverlay.removeFromMap();
+        if(drivingRouteOverlay != null)
+            drivingRouteOverlay.removeFromMap();
     }
 
 }

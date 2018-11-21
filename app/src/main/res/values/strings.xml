@@ -66,5 +66,11 @@
     <string name="mail">info@edu.bjtu.cn</string>
     <!-- This is for left map-->
     <string name="Input">Input you want to find</string>
+    <string name="start">Input Start</string>
+    <string name="end">Input  End</string>
     <string name="search">Search</string>
+    <string name="route">Route</string>
+    <string name="switches">Switch</string>
+    <string name="mapmode">Map mode</string>
+    <string name="hotmap">hotmap</string>
 </resources>

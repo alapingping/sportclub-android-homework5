@@ -42,9 +42,16 @@ android {
     }
     productFlavors {
     }
+    repositories {
+        flatDir {
+            dirs 'libs'
+        }
+    }
 }
 
 dependencies {
+    //baidu navigation
+    compile files('libs/onsdk_all.aar','aar')
     //baidu Map
     compile files('libs/BaiduLBS_Android.jar')
     //bmod-skd

@@ -1,8 +1,15 @@
 package com.sports.sportclub.UI.UI.activity;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Paint;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.EditText;
@@ -13,6 +20,12 @@ import com.sports.sportclub.DataModel.User;
 import com.sports.sportclub.R;
 import com.sports.sportclub.api.BmobService;
 import com.sports.sportclub.api.Client;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
 
 import cn.bmob.v3.Bmob;
 import cn.bmob.v3.BmobUser;
@@ -25,6 +38,14 @@ import retrofit2.Response;
 public class LoginActivity extends AppCompatActivity {
 
     private BmobUser current_user;
+    private String username;
+
+    private static final int REQUEST_EXTERNAL_STORAGE = 1;
+    private static String[] PERMISSIONS_STORAGE = {
+            Manifest.permission.READ_PHONE_STATE,
+            Manifest.permission.ACCESS_COARSE_LOCATION,
+            Manifest.permission.ACCESS_FINE_LOCATION};
+    private List<String> mPermissionList = new ArrayList<String>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,7 +91,7 @@ public class LoginActivity extends AppCompatActivity {
         EditText username_input = findViewById(R.id.username_input);
         EditText password_input = findViewById(R.id.password_input);
 
-        final String username = username_input.getText().toString();
+        username = username_input.getText().toString();
         String password = password_input.getText().toString();
 
         //使用retrofit实现登录请求
@@ -82,7 +103,22 @@ public class LoginActivity extends AppCompatActivity {
 
                 if(response.code() == 200){
                     showmsg("登陆成功");
-                    jump2main(username);
+                    if (Build.VERSION.SDK_INT >= 23) {
+                        for (int i = 0; i < PERMISSIONS_STORAGE.length; i++) {
+                            int checkCallPhonePermission = ContextCompat.checkSelfPermission(LoginActivity.this, PERMISSIONS_STORAGE[i]);
+                            if (checkCallPhonePermission != PackageManager.PERMISSION_GRANTED) {
+                                mPermissionList.add(PERMISSIONS_STORAGE[i]);
+                            }
+                        }
+                        if (mPermissionList.size() > 0) {
+                            ActivityCompat.requestPermissions(LoginActivity.this,
+                                    PERMISSIONS_STORAGE, 222);
+                        } else {
+                            jump2main(username);
+                        }
+
+                    }
+
                 }
                 else if(response.code() == 400) {
                     showmsg("用户名或密码错误");
@@ -132,7 +168,44 @@ public class LoginActivity extends AppCompatActivity {
         Intent intent = new Intent(this,navigationActivity.class);
         intent.putExtra("username",username);
         startActivity(intent);
+       // verifyStoragePermissions(this);
         finish();
+
     }
+
+    public static void verifyStoragePermissions(Activity activity) {
+        int permission = ActivityCompat.checkSelfPermission(activity,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(activity, PERMISSIONS_STORAGE,
+                    REQUEST_EXTERNAL_STORAGE);
+        }
+    }
+
+    /**
+     * 该方法判定获取权限的结果
+     * 若失败，则不能开启摄像头
+     * 若成功，则正确开启摄像头
+     */
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+            //就像onActivityResult一样这个地方就是判断你是从哪来的。
+            case 222:
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // Permission Granted
+                    jump2main(username);
+                } else {
+                    // Permission Denied
+                    Toast.makeText(LoginActivity.this, "相机开启失败", Toast.LENGTH_SHORT)
+                            .show();
+                }
+                break;
+            default:
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+    }
+
 
 }

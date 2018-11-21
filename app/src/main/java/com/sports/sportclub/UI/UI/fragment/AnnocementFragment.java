@@ -1,6 +1,8 @@
 package com.sports.sportclub.UI.UI.fragment;
 
 
+import com.baidu.navisdk.adapter.BaiduNaviManagerFactory;
+import com.baidu.navisdk.adapter.IBaiduNaviManager;
 import com.sports.sportclub.Data.PoiOverlay;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;

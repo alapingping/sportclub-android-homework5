@@ -51,10 +51,6 @@ public class navigationActivity extends AppCompatActivity
     private String [] titles = {"Home","Announcement","Schedule","Favorite","Appointment"};
     public static int currentPosition;
     private static final String KEY_CURRENT_POSITION = "com.sports.sportclub.gridtopager.key.currentPosition";
-    private static final int REQUEST_EXTERNAL_STORAGE = 1;
-    private static String[] PERMISSIONS_STORAGE = {
-            Manifest.permission.ACCESS_COARSE_LOCATION,
-            Manifest.permission.ACCESS_FINE_LOCATION};
 
     //处理退出信息的Handler
     Handler exit_handler = new Handler(){
@@ -78,7 +74,7 @@ public class navigationActivity extends AppCompatActivity
         }
 
         SDKInitializer.initialize(getApplicationContext());
-        verifyStoragePermissions(this);
+
 
 
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -317,13 +313,5 @@ public class navigationActivity extends AppCompatActivity
         outState.putInt(KEY_CURRENT_POSITION, currentPosition);
     }
 
-    public static void verifyStoragePermissions(Activity activity) {
-        int permission = ActivityCompat.checkSelfPermission(activity,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        if (permission != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(activity, PERMISSIONS_STORAGE,
-                    REQUEST_EXTERNAL_STORAGE);
-        }
-    }
 
 }

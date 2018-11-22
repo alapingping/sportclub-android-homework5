@@ -1,4 +1,4 @@
-package com.sports.sportclub.UI.UI.fragment;
+package com.sports.sportclub.UI.UI.activity;
 
 
 import com.baidu.mapapi.search.core.SearchResult;
@@ -30,10 +30,15 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 
 
+import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.SearchView;
@@ -77,9 +82,9 @@ import static cn.bmob.v3.Bmob.getApplicationContext;
 
 
 /**
- * A simple {@link Fragment} subclass.
+     * A simple {@link AppCompatActivity} subclass.
  */
-public class AnnocementFragment extends Fragment {
+public class mapActivity extends AppCompatActivity {
 
     //baiduMap的View
     private MapView mMapView;
@@ -93,7 +98,7 @@ public class AnnocementFragment extends Fragment {
     //自定义定位监听器
     public BDAbstractLocationListener myListener = new MyLocationListener();
     //Poi检索
-    private PoiSearch mPoiSearch;
+    private PoiSearch mPoiSearch = null;
     //步行路线规划
     private RoutePlanSearch mSearch;
     //弹出单选框
@@ -118,34 +123,38 @@ public class AnnocementFragment extends Fragment {
     private LOCATION_MODE cur_location_mode = LOCATION_MODE.NORMAL;
 
     //三种覆盖物
-    WalkingRouteOverlay walkingRouteOverlay = null;
-    BikingRouteOverlay bikingRouteOverlay = null;
-    DrivingRouteOverlay drivingRouteOverlay = null;
+    private WalkingRouteOverlay walkingRouteOverlay = null;
+    private BikingRouteOverlay bikingRouteOverlay = null;
+    private DrivingRouteOverlay drivingRouteOverlay = null;
 
     //热力图开关
     boolean Hot_Map_Open = false;
 
     //sug检索
-    SuggestionSearch mSuggestionSearch;
+    private SuggestionSearch mSuggestionSearch;
+    //补全输入
+    private AutoCompleteTextView autoCompleteTextView;
+    //补全适配器
+    private ArrayAdapter arrayAdapter;
+
 
     //我好笨
     String position;
-    public AnnocementFragment() {
+    public mapActivity() {
         // Required empty public constructor
     }
 
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-
-        View view = inflater.inflate(R.layout.fragment_annocement, container, false);
-        EditText position_text = view.findViewById(R.id.target);
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_map);
+        EditText position_text = findViewById(R.id.target);
         position = position_text.getText().toString();
 
 
-        Button searchBtn = view.findViewById(R.id.buttonserach);
+        Button searchBtn = findViewById(R.id.buttonserach);
         searchBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -158,7 +167,7 @@ public class AnnocementFragment extends Fragment {
                         .pageNum(10));
             }
         });
-        Button routeBtn = view.findViewById(R.id.buttonroute);
+        Button routeBtn = findViewById(R.id.buttonroute);
         routeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -173,8 +182,31 @@ public class AnnocementFragment extends Fragment {
             }
         });
 
+        autoCompleteTextView = findViewById(R.id.endpoint);
+        autoCompleteTextView.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-        mMapView = view.findViewById(R.id.mmap);
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                String endPoint = autoCompleteTextView.getText().toString();
+                mSuggestionSearch = SuggestionSearch.newInstance();
+                mSuggestionSearch.setOnGetSuggestionResultListener(suglistener);
+                mSuggestionSearch.requestSuggestion((new SuggestionSearchOption())
+                    .keyword(endPoint)
+                        .city("北京"));
+            }
+        });
+
+
+        mMapView = findViewById(R.id.mmap);
 
 
         mBaiduMap = mMapView.getMap();
@@ -198,9 +230,9 @@ public class AnnocementFragment extends Fragment {
 //                .city("北京"));
 
 
-        Button switchBtn = view.findViewById(R.id.buttonswitch);
+        Button switchBtn = findViewById(R.id.buttonswitch);
         switchBtn.setOnClickListener(v -> {
-            switch(cur_location_mode) {
+            switch (cur_location_mode) {
                 case NORMAL:
                     cur_location_mode = LOCATION_MODE.COMPASS;
                     mCurrentMode = MyLocationConfiguration.LocationMode.COMPASS;
@@ -216,25 +248,24 @@ public class AnnocementFragment extends Fragment {
             }
         });
 
-        Button mapmodeBtn = view.findViewById(R.id.buttonchoose_map_mode);
+        Button mapmodeBtn = findViewById(R.id.buttonchoose_map_mode);
         mapmodeBtn.setOnClickListener(v -> {
             //初始化单选框
             createDialog();
             dialog.show();
         });
 
-        Button hotmapBtn = view.findViewById(R.id.button_hot_map);
+        Button hotmapBtn = findViewById(R.id.button_hot_map);
         hotmapBtn.setOnClickListener(v -> {
-            if(Hot_Map_Open){
+            if (Hot_Map_Open) {
                 Hot_Map_Open = false;
                 mBaiduMap.setTrafficEnabled(false);
-            }
-            else{
+            } else {
                 Hot_Map_Open = true;
                 mBaiduMap.setTrafficEnabled(true);
             }
         });
-        return view;
+
     }
 
     OnGetPoiSearchResultListener poiListener = new OnGetPoiSearchResultListener(){
@@ -255,7 +286,7 @@ public class AnnocementFragment extends Fragment {
                     mBaiduMap.setOnMarkerClickListener(overlay);
                     mPoiSearch.destroy();
                 } else {
-                    Toast.makeText(getActivity(), "搜索不到你需要的信息！", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mapActivity.this, "搜索不到你需要的信息！", Toast.LENGTH_SHORT).show();
                 }
             }
         }
@@ -280,7 +311,7 @@ public class AnnocementFragment extends Fragment {
         @Override
         public void onGetWalkingRouteResult(WalkingRouteResult result) {
             if (result == null || result.error != SearchResult.ERRORNO.NO_ERROR) {
-                Toast.makeText(getActivity(), "抱歉，未找到结果",
+                Toast.makeText(mapActivity.this, "抱歉，未找到结果",
                         Toast.LENGTH_SHORT).show();
             }
             if (result.error == SearchResult.ERRORNO.AMBIGUOUS_ROURE_ADDR) {
@@ -313,7 +344,7 @@ public class AnnocementFragment extends Fragment {
         @Override
         public void onGetDrivingRouteResult(DrivingRouteResult drivingRouteResult) {
             if (drivingRouteResult == null || drivingRouteResult.error != SearchResult.ERRORNO.NO_ERROR) {
-                Toast.makeText(getActivity(), "抱歉，未找到结果",
+                Toast.makeText(mapActivity.this, "抱歉，未找到结果",
                         Toast.LENGTH_SHORT).show();
             }
             if (drivingRouteResult.error == SearchResult.ERRORNO.AMBIGUOUS_ROURE_ADDR) {
@@ -342,7 +373,7 @@ public class AnnocementFragment extends Fragment {
         @Override
         public void onGetBikingRouteResult(BikingRouteResult bikingRouteResult) {
             if (bikingRouteResult == null || bikingRouteResult.error != SearchResult.ERRORNO.NO_ERROR) {
-                Toast.makeText(getActivity(), "抱歉，未找到结果",
+                Toast.makeText(mapActivity.this, "抱歉，未找到结果",
                         Toast.LENGTH_SHORT).show();
             }
             if (bikingRouteResult.error == SearchResult.ERRORNO.AMBIGUOUS_ROURE_ADDR) {
@@ -372,29 +403,31 @@ public class AnnocementFragment extends Fragment {
         public void onGetSuggestionResult(SuggestionResult msg) {
             // TODO Auto-generated method stub
             if (msg == null || msg.getAllSuggestions() == null) {
-                Toast.makeText(getActivity(), "未检索到当前地址",Toast.LENGTH_SHORT).show();
+                Toast.makeText(mapActivity.this, "未检索到当前地址",Toast.LENGTH_SHORT).show();
                 return;
             }
 
-//            if (list != null) {
-//                list.clear();
-//            }
-//
-//            if (lists != null) {
-//                lists.clear();
-//            }
-//
-//            if (listjl != null) {
-//                listjl.clear();
-//            }
-//
-//            if (listinfo != null) {
-//                listinfo.clear();
-//            }
             List<String> list = new ArrayList<>();
             List<SuggestionResult.SuggestionInfo> listinfo = new ArrayList<>();
             List<String> lists = new ArrayList<>();
             List<String> listjl = new ArrayList<>();
+
+            if (list != null) {
+                list.clear();
+            }
+
+            if (lists != null) {
+                lists.clear();
+            }
+
+            if (listjl != null) {
+                listjl.clear();
+            }
+
+            if (listinfo != null) {
+                listinfo.clear();
+            }
+
 
             for (SuggestionResult.SuggestionInfo info : msg.getAllSuggestions()) {
                 if (info.pt == null) continue;
@@ -406,11 +439,15 @@ public class AnnocementFragment extends Fragment {
                 String distance = df.format(DistanceUtil.getDistance(listinfo.get(0).pt, info.pt));
                 listjl.add(distance);
             }
+
+            arrayAdapter = new ArrayAdapter(
+                    mapActivity.this,android.R.layout.simple_list_item_1,list);
+            autoCompleteTextView.setAdapter(arrayAdapter);
 //            adapter_list_Address = new Adapter_list_Address(getActivity(), list, lists, listjl);
 //            lvAddress.setAdapter(adapter_list_Address);
 //            adapter_list_Address.notifyDataSetChanged();
             if (listinfo.size() == 0) {
-                Toast.makeText(getActivity(), "未检索到当前地址", Toast.LENGTH_SHORT).show();
+                Toast.makeText(mapActivity.this, "未检索到当前地址", Toast.LENGTH_SHORT).show();
                 return;
             }
         }
@@ -689,13 +726,14 @@ public class AnnocementFragment extends Fragment {
         super.onDestroy();
         mBaiduMap.clear();
         mMapView.onDestroy();
-        mPoiSearch.destroy();
+        if(mPoiSearch != null)
+            mPoiSearch.destroy();
         mMapView = null;
     }
 
     public void createDialog(){
         final String items[] = {"普通地图", "卫星图", "空白地图"};
-        dialog = new AlertDialog.Builder(getContext())
+        dialog = new AlertDialog.Builder(mapActivity.this)
                 .setIcon(R.drawable.position)//设置标题的图片
                 .setTitle("请选择地图模式")//设置对话框的标题
                 .setSingleChoiceItems(items, 0, (dialog, which) -> {
@@ -730,7 +768,7 @@ public class AnnocementFragment extends Fragment {
 
     public void createRouteDialog(PlanNode stNode, PlanNode enNode){
         final String items[] = {"步行", "骑行", "驾车"};
-        dialog = new AlertDialog.Builder(getContext())
+        dialog = new AlertDialog.Builder(mapActivity.this)
                 .setIcon(R.drawable.position)//设置标题的图片
                 .setTitle("请选择出行模式")//设置对话框的标题
                 .setSingleChoiceItems(items, 0, (dialog, which) -> {

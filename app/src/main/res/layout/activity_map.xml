@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".UI.UI.fragment.AnnocementFragment"
+    tools:context=".UI.UI.activity.mapActivity"
     android:orientation="vertical">
 
     <!-- TODO: Update blank fragment layout -->
@@ -59,13 +59,14 @@
             android:layout_height="wrap_content"
             android:text="@string/end"/>
 
-        <EditText
-            android:id="@+id/target2"
-            android:layout_width="90dp"
-            android:layout_height="wrap_content" />
+        <AutoCompleteTextView
+            android:id="@+id/endpoint"
+            android:layout_width="100dp"
+            android:layout_height="match_parent" />
 
 
     </LinearLayout>
+
 
     <LinearLayout
         android:layout_width="wrap_content"

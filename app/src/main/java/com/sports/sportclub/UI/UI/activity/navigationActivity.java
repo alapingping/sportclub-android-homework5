@@ -1,16 +1,12 @@
 package com.sports.sportclub.UI.UI.activity;
 
-import android.Manifest;
-import android.app.Activity;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
@@ -19,24 +15,20 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.baidu.mapapi.SDKInitializer;
-import com.sports.sportclub.UI.UI.fragment.AnnocementFragment;
 import com.sports.sportclub.UI.UI.fragment.AppointmentFragment;
 import com.sports.sportclub.UI.UI.fragment.CoachsFragment;
 import com.sports.sportclub.UI.UI.fragment.FavoriteFragment;
 import com.sports.sportclub.UI.UI.fragment.FindFragment;
 import com.sports.sportclub.UI.UI.fragment.HomeFragment;
 import com.sports.sportclub.R;
-import com.sports.sportclub.UI.UI.fragment.ImageFragment;
 import com.sports.sportclub.UI.UI.fragment.ImagePagerFragment;
 import com.sports.sportclub.UI.UI.fragment.RecommendFragment;
 import com.sports.sportclub.UI.UI.fragment.SchedulFragment;
@@ -155,8 +147,9 @@ public class navigationActivity extends AppCompatActivity
             fragment = new HomeFragment();
             position = 0;
         } else if (id == R.id.nav_announcement) {
-           fragment = new AnnocementFragment();
-            position = 1;
+           Intent intent = new Intent(navigationActivity.this,mapActivity.class);
+           startActivity(intent);
+            return true;
         } else if (id == R.id.nav_schedul) {
             fragment = new SchedulFragment();
             position = 2;

@@ -58,12 +58,19 @@ android {
 
 dependencies {
     //baidu navigation
-    compile files('libs/onsdk_all.aar','aar')
+    compile files('libs/onsdk_all.aar')
+    compile files('aar')
     //baidu Map
     compile files('libs/BaiduLBS_Android.jar')
     //bmod-skd
     compile 'cn.bmob.android:bmob-sdk:3.6.3'
     implementation fileTree(include: ['*.jar'], dir: 'libs')
+    //视频播放器
+    implementation project(':jcvideoplayer-lib')
+    compile 'com.squareup.picasso:picasso:2.5.1'
+    
+    compile 'com.zhy:base-adapter:3.0.3'
+
     compile('com.squareup.retrofit2:retrofit:2.1.0') { exclude group: 'com.squareup.okhttp3' }
     compile('com.squareup.retrofit2:converter-gson:2.1.0') {
         exclude group: 'com.google.code.gson'

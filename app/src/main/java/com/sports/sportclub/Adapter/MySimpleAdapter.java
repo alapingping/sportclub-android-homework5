@@ -38,13 +38,7 @@ public class MySimpleAdapter extends SimpleAdapter {
     public View getView(int position, final View contentView, ViewGroup parent) {
 
         View view = super.getView(position,contentView,parent);
-        final ImageButton collectButton = view.findViewById(R.id.collectButton);
-        collectButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
 
-            }
-        });
 
 
 

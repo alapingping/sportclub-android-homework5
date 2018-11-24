@@ -151,8 +151,6 @@ public class mapActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
         EditText position_text = findViewById(R.id.target);
-        position = position_text.getText().toString();
-
 
         Button searchBtn = findViewById(R.id.buttonserach);
         searchBtn.setOnClickListener(new View.OnClickListener() {
@@ -284,7 +282,7 @@ public class mapActivity extends AppCompatActivity {
                     overlay.zoomToSpan();//计算工具
                     //设置标记物的点击监听事件
                     mBaiduMap.setOnMarkerClickListener(overlay);
-                    mPoiSearch.destroy();
+                    //mPoiSearch.destroy();
                 } else {
                     Toast.makeText(mapActivity.this, "搜索不到你需要的信息！", Toast.LENGTH_SHORT).show();
                 }

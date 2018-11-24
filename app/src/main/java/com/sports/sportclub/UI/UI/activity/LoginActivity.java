@@ -16,11 +16,17 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.sports.sportclub.DataModel.User;
 import com.sports.sportclub.R;
 import com.sports.sportclub.api.BmobService;
 import com.sports.sportclub.api.Client;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -33,13 +39,15 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import rx.Subscription;
 
 
 public class LoginActivity extends AppCompatActivity {
 
-    private BmobUser current_user;
+    private User current_user = null;
     private String username;
-
+    private String password;
+    private JSONObject jsonObject = null;
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
     private static String[] PERMISSIONS_STORAGE = {
             Manifest.permission.READ_PHONE_STATE,
@@ -92,7 +100,7 @@ public class LoginActivity extends AppCompatActivity {
         EditText password_input = findViewById(R.id.password_input);
 
         username = username_input.getText().toString();
-        String password = password_input.getText().toString();
+        password = password_input.getText().toString();
 
         //使用retrofit实现登录请求
         BmobService service = Client.retrofit.create(BmobService.class);
@@ -103,6 +111,15 @@ public class LoginActivity extends AppCompatActivity {
 
                 if(response.code() == 200){
                     showmsg("登陆成功");
+                    try {
+                        String str =  response.body().string();
+                        jsonObject = new JSONObject(str);
+
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                     if (Build.VERSION.SDK_INT >= 23) {
                         for (int i = 0; i < PERMISSIONS_STORAGE.length; i++) {
                             int checkCallPhonePermission = ContextCompat.checkSelfPermission(LoginActivity.this, PERMISSIONS_STORAGE[i]);
@@ -114,7 +131,7 @@ public class LoginActivity extends AppCompatActivity {
                             ActivityCompat.requestPermissions(LoginActivity.this,
                                     PERMISSIONS_STORAGE, 222);
                         } else {
-                            jump2main(username);
+                            jump2main(jsonObject);
                         }
 
                     }
@@ -164,29 +181,47 @@ public class LoginActivity extends AppCompatActivity {
         Toast.makeText(LoginActivity.this,msg,Toast.LENGTH_LONG).show();
     }
     //跳转至主界面
-    public void jump2main(String username){
+    public void jump2main(JSONObject jsonObject){
+
+        try {
+            //Object id = jsonObject.get("objectId");
+            Object token = jsonObject.get("sessionToken");
+            Object user_name = jsonObject.get("username");
+            if(jsonObject == null)
+                return;
+            current_user = new User();
+            current_user.setUsername(user_name.toString());
+            current_user.setSessionToken(token.toString());
+            current_user.setPassword(password);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
+
         Intent intent = new Intent(this,navigationActivity.class);
-        intent.putExtra("username",username);
+        //intent.putExtra("username",username);
+        intent.putExtra("user",current_user);
         startActivity(intent);
-       // verifyStoragePermissions(this);
+        //verifyStoragePermissions(this);
         finish();
 
     }
 
-    public static void verifyStoragePermissions(Activity activity) {
-        int permission = ActivityCompat.checkSelfPermission(activity,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE);
-
-        if (permission != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(activity, PERMISSIONS_STORAGE,
-                    REQUEST_EXTERNAL_STORAGE);
-        }
-    }
+//    public static void verifyStoragePermissions(Activity activity) {
+//        int permission = ActivityCompat.checkSelfPermission(activity,
+//                Manifest.permission.WRITE_EXTERNAL_STORAGE);
+//
+//        if (permission != PackageManager.PERMISSION_GRANTED) {
+//            ActivityCompat.requestPermissions(activity, PERMISSIONS_STORAGE,
+//                    REQUEST_EXTERNAL_STORAGE);
+//        }
+//    }
 
     /**
      * 该方法判定获取权限的结果
-     * 若失败，则不能开启摄像头
-     * 若成功，则正确开启摄像头
+     * 若失败，则不能开启定位
+     * 若成功，则正确开启定位
      */
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
@@ -195,7 +230,7 @@ public class LoginActivity extends AppCompatActivity {
             case 222:
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // Permission Granted
-                    jump2main(username);
+                    jump2main(jsonObject);
                 } else {
                     // Permission Denied
                     Toast.makeText(LoginActivity.this, "相机开启失败", Toast.LENGTH_SHORT)

@@ -1,5 +1,7 @@
 package com.sports.sportclub.DataModel;
 
+import java.io.Serializable;
+
 import cn.bmob.v3.BmobUser;
 
 /**
@@ -10,12 +12,17 @@ import cn.bmob.v3.BmobUser;
  * String: UserPass
  */
 
-public class User extends BmobUser {
+public class User extends BmobUser implements Serializable {
 
     public User(String userName, String userPass){
         super();
         super.setUsername(userName);
         super.setPassword(userPass);
+    }
+
+    public User(){
+        super();
+
     }
 
 

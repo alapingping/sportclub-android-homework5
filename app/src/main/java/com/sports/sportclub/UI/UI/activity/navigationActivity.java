@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.NavigationView;
@@ -23,6 +24,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.baidu.mapapi.SDKInitializer;
+import com.sports.sportclub.DataModel.User;
 import com.sports.sportclub.UI.UI.fragment.AppointmentFragment;
 import com.sports.sportclub.UI.UI.fragment.CoachsFragment;
 import com.sports.sportclub.UI.UI.fragment.FavoriteFragment;
@@ -34,15 +36,21 @@ import com.sports.sportclub.UI.UI.fragment.RecommendFragment;
 import com.sports.sportclub.UI.UI.fragment.SchedulFragment;
 
 import cn.bmob.v3.BmobUser;
+import fm.jiecao.jcvideoplayer_lib.JCVideoPlayer;
 
 public class navigationActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    private User curr_user = null;
 
     private boolean isExist = false;   //判断是否退出
     private String [] titles = {"Home","Announcement","Schedule","Favorite","Appointment"};
     public static int currentPosition;
     private static final String KEY_CURRENT_POSITION = "com.sports.sportclub.gridtopager.key.currentPosition";
+
+    private BmobUser bmobUser;
+
+    NavigationView navigationView = null;
 
     //处理退出信息的Handler
     Handler exit_handler = new Handler(){
@@ -62,11 +70,11 @@ public class navigationActivity extends AppCompatActivity
         if (savedInstanceState != null) {
             currentPosition = savedInstanceState.getInt(KEY_CURRENT_POSITION, 0);
             // Return here to prevent adding additional GridFragments when changing orientation.
+            curr_user = (User) savedInstanceState.getSerializable("user");
             return;
         }
 
         SDKInitializer.initialize(getApplicationContext());
-
 
 
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -82,7 +90,7 @@ public class navigationActivity extends AppCompatActivity
         toggle.syncState();
 
         //设置导航监听
-        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.setCheckedItem(R.id.navigation_home);
 
@@ -92,9 +100,10 @@ public class navigationActivity extends AppCompatActivity
 
         View headerLayout = navigationView.getHeaderView(0);
 
-        String username = getIntent().getStringExtra("username");
+        curr_user = (User) getIntent().getSerializableExtra("user");
+
         TextView nav_username = headerLayout.findViewById(R.id.nav_username);
-        nav_username.setText(username);
+        nav_username.setText(curr_user.getUsername());
 
         //设置初始片段为HomeFragment
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
@@ -128,6 +137,7 @@ public class navigationActivity extends AppCompatActivity
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
+
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
@@ -147,8 +157,9 @@ public class navigationActivity extends AppCompatActivity
             fragment = new HomeFragment();
             position = 0;
         } else if (id == R.id.nav_announcement) {
-           Intent intent = new Intent(navigationActivity.this,mapActivity.class);
-           startActivity(intent);
+            Intent intent = new Intent(navigationActivity.this,mapActivity.class);
+            startActivity(intent);
+            navigationView.setCheckedItem(R.id.navigation_home);
             return true;
         } else if (id == R.id.nav_schedul) {
             fragment = new SchedulFragment();
@@ -171,6 +182,10 @@ public class navigationActivity extends AppCompatActivity
             return true;
         }
 
+        if(navigationView == null)
+            navigationView = findViewById(R.id.nav_view);
+        //if(navigationView)
+        //navigationView.setCheckedItem(R.id.navigation_home);
         changeFragment(R.id.frame_content,fragment);
         setActionBarTitle(position,1);
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -185,31 +200,30 @@ public class navigationActivity extends AppCompatActivity
                     case R.id.navigation_home:
                         //打开侧滑功能
                         changeFragment(R.id.frame_content,new HomeFragment());
-                        ((DrawerLayout)findViewById(R.id.drawer_layout))
-                                .setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+//                        ((DrawerLayout)findViewById(R.id.drawer_layout))
+//                                .setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
                         setActionBarTitle(-1,1);
-                        NavigationView navigationView = findViewById(R.id.nav_view);
                         navigationView.setCheckedItem(R.id.navigation_home);
                         return true;
                     case R.id.navigation_dashboard:
                         //禁用侧滑功能
                         changeFragment(R.id.frame_content,new RecommendFragment());
-                        ((DrawerLayout)findViewById(R.id.drawer_layout))
-                                .setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+//                        ((DrawerLayout)findViewById(R.id.drawer_layout))
+//                                .setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
                         setActionBarTitle(-1,2);
                         return true;
                     case R.id.navigation_coaches:
                         //禁用侧滑功能
                         changeFragment(R.id.frame_content,new CoachsFragment());
-                        ((DrawerLayout)findViewById(R.id.drawer_layout))
-                                .setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+//                        ((DrawerLayout)findViewById(R.id.drawer_layout))
+//                                .setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
                         setActionBarTitle(-1,3);
                         return true;
                     case R.id.navigation_find:
                         //禁用侧滑功能
                         changeFragment(R.id.frame_content,new FindFragment());
-                        ((DrawerLayout)findViewById(R.id.drawer_layout))
-                                .setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+//                        ((DrawerLayout)findViewById(R.id.drawer_layout))
+//                                .setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
                         setActionBarTitle(-1,4
                         );
                         return true;
@@ -232,6 +246,7 @@ public class navigationActivity extends AppCompatActivity
 
     @Override
     public boolean onKeyDown(int keyNode, KeyEvent event){
+        if (JCVideoPlayer.backPress()) { return false; }
         Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.frame_content);
         /*
          *判断当前位置
@@ -304,7 +319,23 @@ public class navigationActivity extends AppCompatActivity
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(KEY_CURRENT_POSITION, currentPosition);
+        outState.putSerializable("user",curr_user);
     }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle inState) {
+        super.onSaveInstanceState(inState);
+        this.curr_user = (User) inState.getSerializable("user");
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        //if(navigationView != null)
+            //
+    }
+
 
 
 }

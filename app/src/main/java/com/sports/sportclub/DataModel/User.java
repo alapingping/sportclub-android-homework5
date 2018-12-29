@@ -25,6 +25,4 @@ public class User extends BmobUser implements Serializable {
 
     }
 
-
-
 }

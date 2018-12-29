@@ -5,7 +5,7 @@ android {
         config {
             keyAlias 'key0'
             keyPassword 'nssndwxa'
-            storeFile file('F:/sportclub-android/sportclub.jks')
+            storeFile file('D:\\android3\\sportclub-android-homework3\\sportclub.jks')
             storePassword 'nssndwxa'
         }
     }
@@ -14,6 +14,11 @@ android {
         main {
             jniLibs.srcDir 'libs'
             //说明so的路径为该libs路径，关联所有地图SDK的so文件
+        }
+    }
+    allprojects{
+        repositories {
+            mavenCentral()
         }
     }
     defaultConfig {
@@ -57,20 +62,21 @@ android {
 }
 
 dependencies {
+
     //baidu navigation
     compile files('libs/onsdk_all.aar')
     compile files('aar')
     //baidu Map
     compile files('libs/BaiduLBS_Android.jar')
-    //bmod-skd
+    compile 'com.umeng.sdk:common:latest.integration'
     compile 'cn.bmob.android:bmob-sdk:3.6.3'
+    compile files('libs/open_sdk_r5509.jar')
+    compile files('libs/mta-sdk-1.6.2.jar')
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     //视频播放器
-    implementation project(':jcvideoplayer-lib')
+    //    implementation project(':jcvideoplayer-lib')
     compile 'com.squareup.picasso:picasso:2.5.1'
-    
     compile 'com.zhy:base-adapter:3.0.3'
-
     compile('com.squareup.retrofit2:retrofit:2.1.0') { exclude group: 'com.squareup.okhttp3' }
     compile('com.squareup.retrofit2:converter-gson:2.1.0') {
         exclude group: 'com.google.code.gson'
@@ -98,5 +104,8 @@ dependencies {
     implementation 'com.android.support:gridlayout-v7:26.1.0'
     implementation 'com.android.support:recyclerview-v7:26.1.0'
     implementation files('libs/BaiduLBS_Android.jar')
+    // implementation files('libs/gson-2.2.4.jar')
+    implementation files('libs/SocialSDK_WeChat_Simplify.jar')
+    implementation files('libs/SocialSDK_Sina_Simplify.jar')
 }
 

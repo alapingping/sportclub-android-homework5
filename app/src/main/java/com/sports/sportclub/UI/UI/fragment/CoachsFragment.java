@@ -1,6 +1,8 @@
 package com.sports.sportclub.UI.UI.fragment;
 
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -58,13 +60,13 @@ public class CoachsFragment extends Fragment {
 
         map.put("coach_photo",R.drawable.coach_6);
         map.put("coach_name","Sun Yang");
-        map.put("coach_introduction","champion coach");
+        map.put("coach_introduction","15810853703");
         list.add(map);
 
         map = new HashMap<String, Object>();
         map.put("coach_photo",R.drawable.coach_1);
         map.put("coach_name","Zhang Yongping");
-        map.put("coach_introduction","beauty coach");
+        map.put("coach_introduction","15810853703");
         list.add(map);
 
         map = new HashMap<String, Object>();
@@ -104,9 +106,22 @@ public class CoachsFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
                 Toast.makeText(getActivity(), "1", Toast.LENGTH_SHORT).show();
+                Intent intent=new Intent(Intent.ACTION_DIAL);
+                String phone = (String)DataList().get(position).get("coach_introduction");
+                Uri data=Uri.parse("tel:"+phone);
+                intent.setData(data);
+                startActivity(intent);
 
             }
         });
     }
 
+    public void Call(View view){
+
+        Intent intent=new Intent(Intent.ACTION_DIAL);
+        Uri data=Uri.parse("tel:"+"17735676828");
+        intent.setData(data);
+        startActivity(intent);
+
+    }
 }

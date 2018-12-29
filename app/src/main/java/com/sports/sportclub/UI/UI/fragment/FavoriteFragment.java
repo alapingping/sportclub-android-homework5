@@ -15,7 +15,7 @@ import android.widget.SimpleAdapter;
 
 import com.baidu.mapsdkplatform.comapi.map.A;
 import com.bumptech.glide.Glide;
-import com.sports.sportclub.Adapter.VideoAdapter;
+//import com.sports.sportclub.Adapter.VideoAdapter;
 import com.sports.sportclub.R;
 
 import java.util.ArrayList;
@@ -23,8 +23,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import fm.jiecao.jcvideoplayer_lib.JCVideoPlayer;
-import fm.jiecao.jcvideoplayer_lib.JCVideoPlayerStandard;
+//import fm.jiecao.jcvideoplayer_lib.JCVideoPlayer;
+//import fm.jiecao.jcvideoplayer_lib.JCVideoPlayerStandard;
 
 
 /**
@@ -37,9 +37,9 @@ public class FavoriteFragment extends Fragment {
     private ArrayList<String> string_data;
     private String videoUrl = "http://2449.vod.myqcloud.com/2449_22ca37a6ea9011e5acaaf51d105342e3.f20.mp4";
     private String imageUrl = "http://p.qpic.cn/videoyun/0/2449_43b6f696980311e59ed467f22794e792_1/640";
-    private VideoAdapter adapter;
+//    private VideoAdapter adapter;
     private AbsListView.OnScrollListener onScrollListener;
-    JCVideoPlayerStandard jcVideoPlayerStandard;
+//    JCVideoPlayerStandard jcVideoPlayerStandard;
 
     public FavoriteFragment() {
         // Required empty public constructor
@@ -79,7 +79,7 @@ public class FavoriteFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        JCVideoPlayer.releaseAllVideos();
+//        JCVideoPlayer.releaseAllVideos();
     }
 
     //填充数据列表
@@ -162,8 +162,8 @@ public class FavoriteFragment extends Fragment {
         datas.add(map);
 
 
-        adapter = new VideoAdapter(getActivity(), string_data, R.layout.video_item, datas);
-        videoList.setAdapter(adapter);
+//        adapter = new VideoAdapter(getActivity(), string_data, R.layout.video_item, datas);
+//        videoList.setAdapter(adapter);
     }
 
     private void initListener() {
@@ -179,7 +179,7 @@ public class FavoriteFragment extends Fragment {
                     case AbsListView.OnScrollListener.SCROLL_STATE_IDLE:
                        break;
                     case AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL:
-                        JCVideoPlayer.releaseAllVideos();
+//                        JCVideoPlayer.releaseAllVideos();
                         break;
                 }
 

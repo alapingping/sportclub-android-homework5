@@ -1,6 +1,7 @@
 package com.sports.sportclub.UI.UI.activity;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -15,6 +16,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.telephony.PhoneNumberUtils;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -35,8 +37,16 @@ import com.sports.sportclub.UI.UI.fragment.ImagePagerFragment;
 import com.sports.sportclub.UI.UI.fragment.RecommendFragment;
 import com.sports.sportclub.UI.UI.fragment.SchedulFragment;
 
+import com.tencent.connect.share.QQShare;
+import com.tencent.connect.share.QzoneShare;
+import com.tencent.tauth.IUiListener;
+import com.tencent.tauth.Tencent;
+import com.tencent.tauth.UiError;
+
+import java.util.ArrayList;
+
 import cn.bmob.v3.BmobUser;
-import fm.jiecao.jcvideoplayer_lib.JCVideoPlayer;
+//import fm.jiecao.jcvideoplayer_lib.JCVideoPlayer;
 
 public class navigationActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -171,14 +181,18 @@ public class navigationActivity extends AppCompatActivity
             fragment = new AppointmentFragment();
             position = 4;
         } else if (id == R.id.nav_share) {
-            Toast.makeText(navigationActivity.this,"该功能未开放",Toast.LENGTH_LONG).show();
-            DrawerLayout drawer = findViewById(R.id.drawer_layout);
-            drawer.closeDrawer(GravityCompat.START);
+
+
+            Toast.makeText(navigationActivity.this,"分享到QQ空间",Toast.LENGTH_LONG).show();
+            shareToQQzone();
+//            DrawerLayout drawer = findViewById(R.id.drawer_layout);
+//            drawer.closeDrawer(GravityCompat.START);
             return true;
         } else if (id == R.id.nav_send) {
-            Toast.makeText(navigationActivity.this,"该功能未开放",Toast.LENGTH_LONG).show();
-            DrawerLayout drawer = findViewById(R.id.drawer_layout);
-            drawer.closeDrawer(GravityCompat.START);
+            Toast.makeText(navigationActivity.this,"分享",Toast.LENGTH_LONG).show();
+            onClickShare();
+//            DrawerLayout drawer = findViewById(R.id.drawer_layout);
+//            drawer.closeDrawer(GravityCompat.START);
             return true;
         }
 
@@ -191,6 +205,61 @@ public class navigationActivity extends AppCompatActivity
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+    private void onClickShare() {
+        final Bundle params = new Bundle();
+        params.putInt(QQShare.SHARE_TO_QQ_KEY_TYPE,
+                QQShare.SHARE_TO_QQ_TYPE_DEFAULT);
+        params.putString(QQShare.SHARE_TO_QQ_TITLE, "要分享的标题");
+        params.putString(QQShare.SHARE_TO_QQ_SUMMARY, "要分享的摘要");
+        params.putString(QQShare.SHARE_TO_QQ_TARGET_URL,
+                "http://blog.csdn.net/DickyQie/article/list/1");
+        params.putString(QQShare.SHARE_TO_QQ_IMAGE_URL,
+                "http://imgcache.qq.com/qzone/space_item/pre/0/66768.gif");
+        params.putString(QQShare.SHARE_TO_QQ_APP_NAME, "切切歆语");
+        params.putString(QQShare.SHARE_TO_QQ_EXT_INT, "其他附加功能");
+
+        LoginActivity.mTencent.shareToQQ(navigationActivity.this, params, new BaseUiListener1());
+    }
+    //回调接口  (成功和失败的相关操作)
+    private class BaseUiListener1 implements IUiListener {
+        @Override
+        public void onComplete(Object response) {
+            doComplete(response);
+        }
+
+        protected void doComplete(Object values) {
+        }
+
+        @Override
+        public void onError(UiError e) {
+        }
+
+        @Override
+        public void onCancel() {
+        }
+    }
+    @SuppressWarnings("unused")
+    private void shareToQQzone() {
+        try {
+            final Bundle params = new Bundle();
+            params.putInt(QzoneShare.SHARE_TO_QZONE_KEY_TYPE,
+                    QzoneShare.SHARE_TO_QZONE_TYPE_IMAGE_TEXT);
+            params.putString(QzoneShare.SHARE_TO_QQ_TITLE, "sport club share");
+            params.putString(QzoneShare.SHARE_TO_QQ_SUMMARY, "my share");
+            params.putString(QzoneShare.SHARE_TO_QQ_TARGET_URL,
+                    "http://blog.csdn.net/DickyQie/article/list/1");
+            ArrayList<String> imageUrls = new ArrayList<String>();
+            imageUrls.add("http://media-cdn.tripadvisor.com/media/photo-s/01/3e/05/40/the-sandbar-that-links.jpg");
+            params.putStringArrayList(QzoneShare.SHARE_TO_QQ_IMAGE_URL, imageUrls);
+            params.putInt(QzoneShare.SHARE_TO_QQ_EXT_INT,
+                    QQShare.SHARE_TO_QQ_FLAG_QZONE_AUTO_OPEN);
+            Tencent mTencent = Tencent.createInstance("1106062414",
+                    navigationActivity.this);
+            mTencent.shareToQzone(navigationActivity.this, params,
+                    new BaseUiListener1());
+        } catch (Exception e) {
+        }
     }
 
     //设置底端导航按钮响应事件
@@ -246,7 +315,7 @@ public class navigationActivity extends AppCompatActivity
 
     @Override
     public boolean onKeyDown(int keyNode, KeyEvent event){
-        if (JCVideoPlayer.backPress()) { return false; }
+//        if (JCVideoPlayer.backPress()) { return false; }
         Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.frame_content);
         /*
          *判断当前位置
@@ -335,7 +404,29 @@ public class navigationActivity extends AppCompatActivity
         //if(navigationView != null)
             //
     }
+    public void Call(View view){
 
+        Intent intent=new Intent(Intent.ACTION_DIAL);
+        Uri data=Uri.parse("tel:"+"18801279687");
+        intent.setData(data);
+        startActivity(intent);
+
+    }
+
+    public void doSendSMSTo(View view){
+//        if(PhoneNumberUtils.isGlobalPhoneNumber(phoneNumber)){
+            Intent intent = new Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:"+"18801279687"));
+            intent.putExtra("sms_body", "张永平傻吊");
+            startActivity(intent);
+//        }
+    }
+    public void sendEmail(View view){
+        Intent data=new Intent(Intent.ACTION_SENDTO);
+        data.setData(Uri.parse("mailto:948525147@qq.com"));
+        data.putExtra(Intent.EXTRA_SUBJECT, "这是标题");
+        data.putExtra(Intent.EXTRA_TEXT, "这是内容");
+        startActivity(data);
+    }
 
 
 }
